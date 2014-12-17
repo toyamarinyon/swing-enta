@@ -1,0 +1,32 @@
+{
+  "name": "history-navigator",
+  "description": "",
+  "version": "0.0.1",
+  "private": false,
+  "author": "toyamarinyon",
+  "repository": {
+    "type" : "git",
+    "url"  : "git   : //github.com/toyamarinyon/lovelove-aoi.git"
+  },
+  "engines": {
+    "node" : "0.10.28",
+    "npm"  : "1.4.9"
+  },
+  "scripts": {
+    "start"       : "node node_modules/grunt-cli/bin/grunt",
+    "test"        : "node node_modules/grunt-cli/bin/grunt test",
+    "postinstall" : "node node_modules/bower/bin/bower install; bundle install --path vendor/bundle"
+  },
+  "dependencies": {
+    "bower"                 : "latest"
+  },
+  "devDependencies": {
+    "grunt-cli"                  : "latest",
+    "grunt-contrib-connect"      : "latest",
+    "grunt-contrib-watch"        : "latest",
+    "grunt-contrib-jade"         : "latest",
+    "grunt-contrib-coffee"       : "latest",
+    "grunt-contrib-compass"      : "latest",
+    "grunt-concurrent"           : "latest"
+  }
+}
