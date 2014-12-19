@@ -59,7 +59,7 @@ tm.define("TitleScene", {
   superClass: "tm.app.TitleScene",
   init: function() {
     this.superInit({
-      title: "フライング エン太",
+      title: "空飛ぶエン太",
       width: SCREEN_WIDTH,
       height: SCREEN_HEIGHT
     });
@@ -125,7 +125,7 @@ tm.define("EndScene", {
   init: function(score) {
     return this.superInit({
       score: score,
-      msg: "フライング エン太",
+      msg: "空飛ぶエン太",
       hastags: ["FlyingEnta!"],
       url: "http://icebreak.jp",
       width: SCREEN_WIDTH,
