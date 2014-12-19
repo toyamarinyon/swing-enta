@@ -59,7 +59,7 @@ tm.define("TitleScene", {
   superClass: "tm.app.TitleScene",
   init: function() {
     this.superInit({
-      title: "Flying Enta!",
+      title: "フライング エン太",
       width: SCREEN_WIDTH,
       height: SCREEN_HEIGHT
     });
@@ -125,13 +125,16 @@ tm.define("EndScene", {
   init: function(score) {
     return this.superInit({
       score: score,
-      msg: "Flying Enta!",
+      msg: "フライング エン太",
       hastags: ["FlyingEnta!"],
-      url: "http://christmas.icebreak.jp",
+      url: "http://icebreak.jp",
       width: SCREEN_WIDTH,
       height: SCREEN_HEIGHT,
       related: "thank you for playing!"
     });
+  },
+  onnextscene: function(event) {
+    return event.target.app.replaceScene(TitleScene());
   }
 });
 

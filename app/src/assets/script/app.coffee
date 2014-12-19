@@ -52,7 +52,7 @@ tm.define "TitleScene",
   superClass: "tm.app.TitleScene"
   init: ->
     this.superInit
-      title: "Flying Enta!"
+      title: "フライング エン太"
       width: SCREEN_WIDTH
       height: SCREEN_HEIGHT
     this.addEventListener "pointingend", (event) ->
@@ -112,12 +112,14 @@ tm.define "EndScene",
   init: (score) ->
     this.superInit
       score: score
-      msg: "Flying Enta!"
+      msg: "フライング エン太"
       hastags: ["FlyingEnta!"]
-      url: "http://christmas.icebreak.jp"
+      url: "http://icebreak.jp"
       width: SCREEN_WIDTH
       height: SCREEN_HEIGHT
       related: "thank you for playing!"
+  onnextscene: (event) ->
+    event.target.app.replaceScene TitleScene()
 
 tm.define "Enta",
   superClass: "tm.app.Sprite"
