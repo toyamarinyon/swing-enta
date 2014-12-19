@@ -5,16 +5,35 @@ SCREEN_HEIGHT = 960
 PLAYER_WIDTH = 370
 PLAYER_HEIGHT = 320
 
+ENEMY_WIDTH  = 38
+ENEMY_HEIGHT = 30
+
+UI_DATA =
+  main:
+    children: [
+      type: "Label"
+      name: "timeLabel"
+      x: 200
+      y: 120
+      width: SCREEN_WIDTH
+      fillStyle: "black"
+      text: " "
+      fontSize: 60
+      align: "center"
+    ]
+
 ASSETS = 
   "player": "assets/image/player.png"
   "back": "assets/image/background.png"
   "ground": "assets/image/ground.png"
+  "enemy": "assets/image/[Monster]Dragon_B_pochi.png"
 
 tm.main ->
   app = tm.display.CanvasApp "#World"
   app.resize SCREEN_WIDTH, SCREEN_HEIGHT
   app.fitWindow()
   app.background = "rgb(0, 0, 0)"
+  app.score = 0
 
   loadingScene = tm.app.LoadingScene
     assets: ASSETS
@@ -43,6 +62,7 @@ tm.define "MainScene",
   superClass: "tm.app.Scene"
   init: ->
     this.superInit()
+    this.timer = 0
     this.worldSpeed = 0
     this.back1 = tm.app.Sprite("back", SCREEN_WIDTH, SCREEN_HEIGHT).addChildTo this
     this.back1.position.set SCREEN_WIDTH/2, SCREEN_HEIGHT/2
@@ -52,8 +72,13 @@ tm.define "MainScene",
     this.ground.position.set SCREEN_WIDTH/2, SCREEN_HEIGHT/2
     this.enta = Enta().addChildTo this
     this.enta.position.set SCREEN_WIDTH/2, SCREEN_HEIGHT - PLAYER_HEIGHT/1.4 -170
+    this.fromJSON UI_DATA.main
     # this.addEventListener "pointingend", (event) ->
     #   event.app.replaceScene EndScene()
+
+    this.enemyGroup = tm.app.CanvasElement().addChildTo this
+
+
   update: (app) ->
     this.worldSpeed+= 0.05 if this.worldSpeed < 5
     this.ground.y += this.worldSpeed
@@ -66,11 +91,27 @@ tm.define "MainScene",
     if this.worldSpeed > 2.0
       app.enableController = true
 
+
+    this.timeLabel.text = app.score
+
+    ++this.timer
+
+    if this.timer % 60 is 0
+      enemy = Enemy().addChildTo this.enemyGroup
+      enemy.x = Math.rand 0, SCREEN_WIDTH
+      enemy.y = 0 - enemy.height
+
+    self = this
+    enemies = this.enemyGroup.children
+    enemies.each (enemy) ->
+      if self.enta.isHitElement enemy
+        app.replaceScene EndScene(app.score)
+
 tm.define "EndScene",
   superClass: "tm.app.ResultScene"
-  init: ->
+  init: (score) ->
     this.superInit
-      score: 256
+      score: score
       msg: "Flying Enta!"
       hastags: ["FlyingEnta!"]
       url: "http://christmas.icebreak.jp"
@@ -112,3 +153,15 @@ tm.define "Enta",
     if this.x < 0
       this.x = 0
 
+tm.define "Enemy",
+  superClass: "tm.app.Sprite"
+  init: ->
+    this.superInit "enemy", ENEMY_WIDTH*4, ENEMY_HEIGHT*4
+    this.speed = Math.rand 6,12
+
+  update: (app)->
+    this.y += this.speed
+
+    if this.y > SCREEN_HEIGHT + this.height
+      this.remove()
+      app.score++

@@ -1,4 +1,4 @@
-var ASSETS, PLAYER_HEIGHT, PLAYER_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH;
+var ASSETS, ENEMY_HEIGHT, ENEMY_WIDTH, PLAYER_HEIGHT, PLAYER_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH, UI_DATA;
 
 SCREEN_WIDTH = 640;
 
@@ -8,10 +8,33 @@ PLAYER_WIDTH = 370;
 
 PLAYER_HEIGHT = 320;
 
+ENEMY_WIDTH = 38;
+
+ENEMY_HEIGHT = 30;
+
+UI_DATA = {
+  main: {
+    children: [
+      {
+        type: "Label",
+        name: "timeLabel",
+        x: 200,
+        y: 120,
+        width: SCREEN_WIDTH,
+        fillStyle: "black",
+        text: " ",
+        fontSize: 60,
+        align: "center"
+      }
+    ]
+  }
+};
+
 ASSETS = {
   "player": "assets/image/player.png",
   "back": "assets/image/background.png",
-  "ground": "assets/image/ground.png"
+  "ground": "assets/image/ground.png",
+  "enemy": "assets/image/[Monster]Dragon_B_pochi.png"
 };
 
 tm.main(function() {
@@ -20,6 +43,7 @@ tm.main(function() {
   app.resize(SCREEN_WIDTH, SCREEN_HEIGHT);
   app.fitWindow();
   app.background = "rgb(0, 0, 0)";
+  app.score = 0;
   loadingScene = tm.app.LoadingScene({
     assets: ASSETS,
     nextScene: TitleScene,
@@ -49,6 +73,7 @@ tm.define("MainScene", {
   superClass: "tm.app.Scene",
   init: function() {
     this.superInit();
+    this.timer = 0;
     this.worldSpeed = 0;
     this.back1 = tm.app.Sprite("back", SCREEN_WIDTH, SCREEN_HEIGHT).addChildTo(this);
     this.back1.position.set(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
@@ -57,9 +82,12 @@ tm.define("MainScene", {
     this.ground = tm.app.Sprite("ground", SCREEN_WIDTH, SCREEN_HEIGHT).addChildTo(this);
     this.ground.position.set(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
     this.enta = Enta().addChildTo(this);
-    return this.enta.position.set(SCREEN_WIDTH / 2, SCREEN_HEIGHT - PLAYER_HEIGHT / 1.4 - 170);
+    this.enta.position.set(SCREEN_WIDTH / 2, SCREEN_HEIGHT - PLAYER_HEIGHT / 1.4 - 170);
+    this.fromJSON(UI_DATA.main);
+    return this.enemyGroup = tm.app.CanvasElement().addChildTo(this);
   },
   update: function(app) {
+    var enemies, enemy, self;
     if (this.worldSpeed < 5) {
       this.worldSpeed += 0.05;
     }
@@ -73,16 +101,30 @@ tm.define("MainScene", {
       this.back2.y = -(SCREEN_HEIGHT - this.back1.y);
     }
     if (this.worldSpeed > 2.0) {
-      return app.enableController = true;
+      app.enableController = true;
     }
+    this.timeLabel.text = app.score;
+    ++this.timer;
+    if (this.timer % 60 === 0) {
+      enemy = Enemy().addChildTo(this.enemyGroup);
+      enemy.x = Math.rand(0, SCREEN_WIDTH);
+      enemy.y = 0 - enemy.height;
+    }
+    self = this;
+    enemies = this.enemyGroup.children;
+    return enemies.each(function(enemy) {
+      if (self.enta.isHitElement(enemy)) {
+        return app.replaceScene(EndScene(app.score));
+      }
+    });
   }
 });
 
 tm.define("EndScene", {
   superClass: "tm.app.ResultScene",
-  init: function() {
+  init: function(score) {
     return this.superInit({
-      score: 256,
+      score: score,
       msg: "Flying Enta!",
       hastags: ["FlyingEnta!"],
       url: "http://christmas.icebreak.jp",
@@ -131,6 +173,21 @@ tm.define("Enta", {
     }
     if (this.x < 0) {
       return this.x = 0;
+    }
+  }
+});
+
+tm.define("Enemy", {
+  superClass: "tm.app.Sprite",
+  init: function() {
+    this.superInit("enemy", ENEMY_WIDTH * 4, ENEMY_HEIGHT * 4);
+    return this.speed = Math.rand(6, 12);
+  },
+  update: function(app) {
+    this.y += this.speed;
+    if (this.y > SCREEN_HEIGHT + this.height) {
+      this.remove();
+      return app.score++;
     }
   }
 });
