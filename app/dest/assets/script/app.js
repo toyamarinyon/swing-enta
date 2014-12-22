@@ -1,16 +1,16 @@
-var ASSETS, ENEMY_HEIGHT, ENEMY_WIDTH, PLAYER_HEIGHT, PLAYER_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH, UI_DATA;
+var ASSETS, ENEMY_HEIGHT, ENEMY_WIDTH, PLAYER_HEIGHT, PLAYER_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH, UI_DATA, enableController, score;
 
 SCREEN_WIDTH = 640;
 
 SCREEN_HEIGHT = 960;
 
-PLAYER_WIDTH = 370;
+PLAYER_WIDTH = 298;
 
-PLAYER_HEIGHT = 320;
+PLAYER_HEIGHT = 358;
 
-ENEMY_WIDTH = 38;
+ENEMY_WIDTH = 161;
 
-ENEMY_HEIGHT = 30;
+ENEMY_HEIGHT = 156;
 
 UI_DATA = {
   main: {
@@ -31,11 +31,17 @@ UI_DATA = {
 };
 
 ASSETS = {
-  "player": "assets/image/player.png",
-  "back": "assets/image/background.png",
+  "entaRight": "assets/image/entaRight.png",
+  "entaLeft": "assets/image/entaLeft.png",
+  "sky": "assets/image/sky.png",
+  "skyNogu": "assets/image/skyNogu.png",
   "ground": "assets/image/ground.png",
-  "enemy": "assets/image/[Monster]Dragon_B_pochi.png"
+  "tina": "assets/image/tina.png"
 };
+
+score = 0;
+
+enableController = false;
 
 tm.main(function() {
   var app, loadingScene;
@@ -43,7 +49,6 @@ tm.main(function() {
   app.resize(SCREEN_WIDTH, SCREEN_HEIGHT);
   app.fitWindow();
   app.background = "rgb(0, 0, 0)";
-  app.score = 0;
   loadingScene = tm.app.LoadingScene({
     assets: ASSETS,
     nextScene: TitleScene,
@@ -51,7 +56,6 @@ tm.main(function() {
     height: SCREEN_HEIGHT
   });
   app.replaceScene(loadingScene);
-  app.enableController = false;
   return app.run();
 });
 
@@ -75,14 +79,16 @@ tm.define("MainScene", {
     this.superInit();
     this.timer = 0;
     this.worldSpeed = 0;
-    this.back1 = tm.app.Sprite("back", SCREEN_WIDTH, SCREEN_HEIGHT).addChildTo(this);
+    score = 0;
+    enableController = false;
+    this.back1 = tm.app.Sprite("sky", SCREEN_WIDTH, SCREEN_HEIGHT).addChildTo(this);
     this.back1.position.set(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
-    this.back2 = tm.app.Sprite("back", SCREEN_WIDTH, SCREEN_HEIGHT).addChildTo(this);
+    this.back2 = tm.app.Sprite("skyNogu", SCREEN_WIDTH, SCREEN_HEIGHT).addChildTo(this);
     this.back2.position.set(SCREEN_WIDTH / 2, -SCREEN_HEIGHT / 2);
-    this.ground = tm.app.Sprite("ground", SCREEN_WIDTH, SCREEN_HEIGHT).addChildTo(this);
-    this.ground.position.set(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
+    this.ground = tm.app.Sprite("ground").addChildTo(this);
+    this.ground.position.set(SCREEN_WIDTH / 2, SCREEN_HEIGHT - this.ground.height / 2);
     this.enta = Enta().addChildTo(this);
-    this.enta.position.set(SCREEN_WIDTH / 2, SCREEN_HEIGHT - PLAYER_HEIGHT / 1.4 - 170);
+    this.enta.position.set(SCREEN_WIDTH / 2, SCREEN_HEIGHT - PLAYER_HEIGHT / 1.4 - 20);
     this.fromJSON(UI_DATA.main);
     return this.enemyGroup = tm.app.CanvasElement().addChildTo(this);
   },
@@ -101,9 +107,9 @@ tm.define("MainScene", {
       this.back2.y = -(SCREEN_HEIGHT - this.back1.y);
     }
     if (this.worldSpeed > 2.0) {
-      app.enableController = true;
+      enableController = true;
     }
-    this.timeLabel.text = app.score;
+    this.timeLabel.text = score;
     ++this.timer;
     if (this.timer % 60 === 0) {
       enemy = Enemy().addChildTo(this.enemyGroup);
@@ -114,7 +120,7 @@ tm.define("MainScene", {
     enemies = this.enemyGroup.children;
     return enemies.each(function(enemy) {
       if (self.enta.isHitElement(enemy)) {
-        return app.replaceScene(EndScene(app.score));
+        return app.replaceScene(EndScene(score));
       }
     });
   }
@@ -140,19 +146,24 @@ tm.define("EndScene", {
 
 tm.define("Enta", {
   superClass: "tm.app.Sprite",
-  direction: 'left',
+  direction: "left",
   degree: 90,
   init: function() {
-    this.superInit("player", PLAYER_WIDTH / 1.4, PLAYER_HEIGHT / 1.4);
+    this.superInit("entaRight", PLAYER_WIDTH / 1.4, PLAYER_HEIGHT / 1.4);
     return this.origin.y = 0;
   },
   update: function(app) {
     var accel;
     if (app.pointing.getPointingStart()) {
-      this.direction = this.direction === 'left' ? 'right' : 'left';
+      this.direction = this.direction === "left" ? "right" : "left";
     }
-    if (app.enableController) {
-      if (this.direction === 'left') {
+    if (this.direction === "left") {
+      this.image = "entaLeft";
+    } else {
+      this.image = "entaRight";
+    }
+    if (enableController) {
+      if (this.direction === "left") {
         if (this.degree > 45) {
           this.degree -= 1;
         }
@@ -183,14 +194,18 @@ tm.define("Enta", {
 tm.define("Enemy", {
   superClass: "tm.app.Sprite",
   init: function() {
-    this.superInit("enemy", ENEMY_WIDTH * 4, ENEMY_HEIGHT * 4);
-    return this.speed = Math.rand(6, 12);
+    this.superInit("tina", ENEMY_WIDTH / 1.4, ENEMY_HEIGHT / 1.4);
+    this.speed = Math.rand(6, 12);
+    return this.counted = false;
   },
   update: function(app) {
     this.y += this.speed;
     if (this.y > SCREEN_HEIGHT + this.height) {
       this.remove();
-      return app.score++;
+    }
+    if (!this.counted && this.y > SCREEN_HEIGHT - PLAYER_HEIGHT / 1.4 - 20) {
+      score++;
+      return this.counted = true;
     }
   }
 });
