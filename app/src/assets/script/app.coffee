@@ -27,16 +27,16 @@ UI_DATA =
   titleScene:
     children: [
       type: "tm.display.Sprite"
-      name: "back"
-      init: ["titleBack"]
+      name: "title"
+      init: ["title"]
       x: SCREEN_CENTER_X
-      y: SCREEN_CENTER_Y
+      y: 220
      ,
       type: "tm.display.Sprite"
-      name: "playButton"
-      init: ["playButton"]
+      name: "titleButton"
+      init: ["titleButton"]
       x: SCREEN_CENTER_X
-      y: SCREEN_CENTER_Y
+      y: SCREEN_HEIGHT - 300
     ]
   gameScene:
     children: [
@@ -61,7 +61,9 @@ UI_DATA =
       init: ["ground"]
       x: SCREEN_CENTER_X
       y:  SCREEN_HEIGHT
-     ,
+    ]
+  playerAndTimeLabel:
+    children: [
       type: "Enta"
       name: "enta"
       x: SCREEN_CENTER_X
@@ -91,8 +93,11 @@ ASSETS =
   "skyNogu": "assets/image/skyNogu.png"
   "ground": "assets/image/ground.png"
   "tina": "assets/image/tina.png"
+  "title": "assets/image/title.png"
+  "titleButton": "assets/image/btn.png"
   "titleBack": "assets/image/bg.png"
   "playButton": "assets/image/playButton.png"
+  "bgm" : "assets/sound/bgm.mp3"
 ###
 ASSETS }}}
 ###
@@ -116,12 +121,20 @@ tm.main ->
 
   app.run()
 
+  app.canvas.element.addEventListener "touchstart", ->
+    if not bgmPlayed
+      tm.asset.AssetManager.get("bgm").setLoop(true).play()
+      bgmPlayed = true
 
+
+bgmPlayed = false
 tm.define "TitleScene",
   superClass: "tm.app.TitleScene"
   init: ->
     this.superInit()
+    this.fromJSON UI_DATA.gameScene
     this.fromJSON UI_DATA.titleScene
+    this.ground.y = SCREEN_HEIGHT - this.ground.height/2
     this.addEventListener "pointingend", (event) ->
       event.app.replaceScene MainScene()
 
@@ -130,6 +143,7 @@ tm.define "MainScene",
   init: ->
     this.superInit()
     this.fromJSON UI_DATA.gameScene
+    this.fromJSON UI_DATA.playerAndTimeLabel
 
     this.timer = 0
     this.worldSpeed = 0
@@ -184,30 +198,40 @@ tm.define "EndScene",
 tm.define "Enta",
   superClass: "tm.app.Sprite"
   direction: "left"
+  prevFrameDirection: "left"
   degree: 90
+  accel: 0
   init: ->
     this.superInit "entaRight", PLAYER_WIDTH/PLAYER_SCALE_FACTOR, PLAYER_HEIGHT/PLAYER_SCALE_FACTOR
     this.origin.y = 0
 
   update: (app) ->
-    if app.pointing.getPointingStart()
-      app.pointing.x
-      this.direction = if this.direction is "left" then "right" else "left"
+    if app.pointing.getPointingStart() and this.x isnt app.pointing.x
+      this.direction = if app.pointing.x < this.x then "left" else "right"
+      # this.direction = if this.direction is "left" then "right" else "left"
+      if this.direction is "left"
+        if this.prevFrameDirection isnt this.direction
+          this.accel = 1
+        else
+          this.accel++ if this.accel < 2
+      else
+        if this.prevFrameDirection isnt this.direction
+          this.accel = -1
+        else
+          this.accel-- if this.accel > -2
 
     if this.direction is "left"
       this.image = "entaLeft"
     else
       this.image = "entaRight"
 
-    if enableController
-      if this.direction is "left"
-        this.degree-= 1 if this.degree > 70
-      else
-        this.degree+= 1 if this.degree < 110
+    if enableController and (this.prevFrameDirection isnt this.direction or this.degree > 90 - 35 and this.degree < 90 + 35)
+      this.degree += this.accel
+      this.degree += this.accel if this.prevFrameDirection isnt this.direction
 
-    accel = Math.cos this.degree * (Math.PI/180)
 
-    this.x += accel * 20.0
+    moveX = Math.cos this.degree * (Math.PI/180)
+    this.x += moveX * 20.0
 
     this.rotation = -(this.degree - 90)
 
@@ -220,6 +244,8 @@ tm.define "Enta",
       this.x = SCREEN_WIDTH
     if this.x < 0
       this.x = 0
+
+    this.prevFrameDirection = this.direction
 
 tm.define "Enemy",
   superClass: "tm.app.Sprite"

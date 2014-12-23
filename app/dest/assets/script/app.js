@@ -2,7 +2,7 @@
 /*
 Define {{{
  */
-var ASSETS, ENEMY_HEIGHT, ENEMY_SCALE_FACTOR, ENEMY_WIDTH, PLAYER_HEIGHT, PLAYER_POSITION_Y, PLAYER_SCALE_FACTOR, PLAYER_WIDTH, SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH, UI_DATA, enableController, score;
+var ASSETS, ENEMY_HEIGHT, ENEMY_SCALE_FACTOR, ENEMY_WIDTH, PLAYER_HEIGHT, PLAYER_POSITION_Y, PLAYER_SCALE_FACTOR, PLAYER_WIDTH, SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH, UI_DATA, bgmPlayed, enableController, score;
 
 SCREEN_WIDTH = 640;
 
@@ -41,16 +41,16 @@ UI_DATA = {
     children: [
       {
         type: "tm.display.Sprite",
-        name: "back",
-        init: ["titleBack"],
+        name: "title",
+        init: ["title"],
         x: SCREEN_CENTER_X,
-        y: SCREEN_CENTER_Y
+        y: 220
       }, {
         type: "tm.display.Sprite",
-        name: "playButton",
-        init: ["playButton"],
+        name: "titleButton",
+        init: ["titleButton"],
         x: SCREEN_CENTER_X,
-        y: SCREEN_CENTER_Y
+        y: SCREEN_HEIGHT - 300
       }
     ]
   },
@@ -78,7 +78,12 @@ UI_DATA = {
         init: ["ground"],
         x: SCREEN_CENTER_X,
         y: SCREEN_HEIGHT
-      }, {
+      }
+    ]
+  },
+  playerAndTimeLabel: {
+    children: [
+      {
         type: "Enta",
         name: "enta",
         x: SCREEN_CENTER_X,
@@ -115,8 +120,11 @@ ASSETS = {
   "skyNogu": "assets/image/skyNogu.png",
   "ground": "assets/image/ground.png",
   "tina": "assets/image/tina.png",
+  "title": "assets/image/title.png",
+  "titleButton": "assets/image/btn.png",
   "titleBack": "assets/image/bg.png",
-  "playButton": "assets/image/playButton.png"
+  "playButton": "assets/image/playButton.png",
+  "bgm": "assets/sound/bgm.mp3"
 };
 
 
@@ -141,14 +149,25 @@ tm.main(function() {
     height: SCREEN_HEIGHT
   });
   app.replaceScene(loadingScene);
-  return app.run();
+  app.run();
+  return app.canvas.element.addEventListener("touchstart", function() {
+    var bgmPlayed;
+    if (!bgmPlayed) {
+      tm.asset.AssetManager.get("bgm").setLoop(true).play();
+      return bgmPlayed = true;
+    }
+  });
 });
+
+bgmPlayed = false;
 
 tm.define("TitleScene", {
   superClass: "tm.app.TitleScene",
   init: function() {
     this.superInit();
+    this.fromJSON(UI_DATA.gameScene);
     this.fromJSON(UI_DATA.titleScene);
+    this.ground.y = SCREEN_HEIGHT - this.ground.height / 2;
     return this.addEventListener("pointingend", function(event) {
       return event.app.replaceScene(MainScene());
     });
@@ -160,6 +179,7 @@ tm.define("MainScene", {
   init: function() {
     this.superInit();
     this.fromJSON(UI_DATA.gameScene);
+    this.fromJSON(UI_DATA.playerAndTimeLabel);
     this.timer = 0;
     this.worldSpeed = 0;
     score = 0;
@@ -222,35 +242,48 @@ tm.define("EndScene", {
 tm.define("Enta", {
   superClass: "tm.app.Sprite",
   direction: "left",
+  prevFrameDirection: "left",
   degree: 90,
+  accel: 0,
   init: function() {
     this.superInit("entaRight", PLAYER_WIDTH / PLAYER_SCALE_FACTOR, PLAYER_HEIGHT / PLAYER_SCALE_FACTOR);
     return this.origin.y = 0;
   },
   update: function(app) {
-    var accel;
-    if (app.pointing.getPointingStart()) {
-      app.pointing.x;
-      this.direction = this.direction === "left" ? "right" : "left";
+    var moveX;
+    if (app.pointing.getPointingStart() && this.x !== app.pointing.x) {
+      this.direction = app.pointing.x < this.x ? "left" : "right";
+      if (this.direction === "left") {
+        if (this.prevFrameDirection !== this.direction) {
+          this.accel = 1;
+        } else {
+          if (this.accel < 2) {
+            this.accel++;
+          }
+        }
+      } else {
+        if (this.prevFrameDirection !== this.direction) {
+          this.accel = -1;
+        } else {
+          if (this.accel > -2) {
+            this.accel--;
+          }
+        }
+      }
     }
     if (this.direction === "left") {
       this.image = "entaLeft";
     } else {
       this.image = "entaRight";
     }
-    if (enableController) {
-      if (this.direction === "left") {
-        if (this.degree > 70) {
-          this.degree -= 1;
-        }
-      } else {
-        if (this.degree < 110) {
-          this.degree += 1;
-        }
+    if (enableController && (this.prevFrameDirection !== this.direction || this.degree > 90 - 35 && this.degree < 90 + 35)) {
+      this.degree += this.accel;
+      if (this.prevFrameDirection !== this.direction) {
+        this.degree += this.accel;
       }
     }
-    accel = Math.cos(this.degree * (Math.PI / 180));
-    this.x += accel * 20.0;
+    moveX = Math.cos(this.degree * (Math.PI / 180));
+    this.x += moveX * 20.0;
     this.rotation = -(this.degree - 90);
     if (this.rotation < -35) {
       this.rotation = -35;
@@ -262,8 +295,9 @@ tm.define("Enta", {
       this.x = SCREEN_WIDTH;
     }
     if (this.x < 0) {
-      return this.x = 0;
+      this.x = 0;
     }
+    return this.prevFrameDirection = this.direction;
   }
 });
 
