@@ -1,4 +1,4 @@
-var ASSETS, ENEMY_HEIGHT, ENEMY_WIDTH, PLAYER_HEIGHT, PLAYER_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH, UI_DATA, enableController, score;
+var ASSETS, ENEMY_HEIGHT, ENEMY_SCALE_FACTOR, ENEMY_WIDTH, PLAYER_HEIGHT, PLAYER_POSITION_Y, PLAYER_SCALE_FACTOR, PLAYER_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH, UI_DATA, enableController, score;
 
 SCREEN_WIDTH = 640;
 
@@ -8,9 +8,15 @@ PLAYER_WIDTH = 298;
 
 PLAYER_HEIGHT = 358;
 
+PLAYER_POSITION_Y = SCREEN_HEIGHT - PLAYER_HEIGHT / 1.4 - 20;
+
+PLAYER_SCALE_FACTOR = 2.0;
+
 ENEMY_WIDTH = 161;
 
 ENEMY_HEIGHT = 156;
+
+ENEMY_SCALE_FACTOR = 2.0;
 
 UI_DATA = {
   main: {
@@ -88,7 +94,7 @@ tm.define("MainScene", {
     this.ground = tm.app.Sprite("ground").addChildTo(this);
     this.ground.position.set(SCREEN_WIDTH / 2, SCREEN_HEIGHT - this.ground.height / 2);
     this.enta = Enta().addChildTo(this);
-    this.enta.position.set(SCREEN_WIDTH / 2, SCREEN_HEIGHT - PLAYER_HEIGHT / 1.4 - 20);
+    this.enta.position.set(SCREEN_WIDTH / 2, PLAYER_POSITION_Y);
     this.fromJSON(UI_DATA.main);
     return this.enemyGroup = tm.app.CanvasElement().addChildTo(this);
   },
@@ -149,7 +155,7 @@ tm.define("Enta", {
   direction: "left",
   degree: 90,
   init: function() {
-    this.superInit("entaRight", PLAYER_WIDTH / 1.4, PLAYER_HEIGHT / 1.4);
+    this.superInit("entaRight", PLAYER_WIDTH / PLAYER_SCALE_FACTOR, PLAYER_HEIGHT / PLAYER_SCALE_FACTOR);
     return this.origin.y = 0;
   },
   update: function(app) {
@@ -164,11 +170,11 @@ tm.define("Enta", {
     }
     if (enableController) {
       if (this.direction === "left") {
-        if (this.degree > 45) {
+        if (this.degree > 70) {
           this.degree -= 1;
         }
       } else {
-        if (this.degree < 135) {
+        if (this.degree < 110) {
           this.degree += 1;
         }
       }
@@ -194,7 +200,7 @@ tm.define("Enta", {
 tm.define("Enemy", {
   superClass: "tm.app.Sprite",
   init: function() {
-    this.superInit("tina", ENEMY_WIDTH / 1.4, ENEMY_HEIGHT / 1.4);
+    this.superInit("tina", ENEMY_WIDTH / ENEMY_SCALE_FACTOR, ENEMY_HEIGHT / ENEMY_SCALE_FACTOR);
     this.speed = Math.rand(6, 12);
     return this.counted = false;
   },
@@ -203,7 +209,7 @@ tm.define("Enemy", {
     if (this.y > SCREEN_HEIGHT + this.height) {
       this.remove();
     }
-    if (!this.counted && this.y > SCREEN_HEIGHT - PLAYER_HEIGHT / 1.4 - 20) {
+    if (!this.counted && this.y > PLAYER_POSITION_Y) {
       score++;
       return this.counted = true;
     }

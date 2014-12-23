@@ -4,9 +4,12 @@ SCREEN_HEIGHT = 960
 
 PLAYER_WIDTH = 298
 PLAYER_HEIGHT = 358
+PLAYER_POSITION_Y = SCREEN_HEIGHT - PLAYER_HEIGHT/1.4 -20
+PLAYER_SCALE_FACTOR = 2.0
 
 ENEMY_WIDTH  = 161
 ENEMY_HEIGHT = 156
+ENEMY_SCALE_FACTOR = 2.0
 
 UI_DATA =
   main:
@@ -78,10 +81,8 @@ tm.define "MainScene",
     this.ground.position.set SCREEN_WIDTH/2, SCREEN_HEIGHT - this.ground.height/2
 
     this.enta = Enta().addChildTo this
-    this.enta.position.set SCREEN_WIDTH/2, SCREEN_HEIGHT - PLAYER_HEIGHT/1.4 -20
+    this.enta.position.set SCREEN_WIDTH/2, PLAYER_POSITION_Y
     this.fromJSON UI_DATA.main
-    # this.addEventListener "pointingend", (event) ->
-    #   event.app.replaceScene EndScene()
 
     this.enemyGroup = tm.app.CanvasElement().addChildTo this
 
@@ -133,7 +134,7 @@ tm.define "Enta",
   direction: "left"
   degree: 90
   init: ->
-    this.superInit "entaRight", PLAYER_WIDTH/1.4, PLAYER_HEIGHT/1.4
+    this.superInit "entaRight", PLAYER_WIDTH/PLAYER_SCALE_FACTOR, PLAYER_HEIGHT/PLAYER_SCALE_FACTOR
     this.origin.y = 0
 
   update: (app) ->
@@ -147,9 +148,9 @@ tm.define "Enta",
 
     if enableController
       if this.direction is "left"
-        this.degree-= 1 if this.degree > 45
+        this.degree-= 1 if this.degree > 70
       else
-        this.degree+= 1 if this.degree < 135
+        this.degree+= 1 if this.degree < 110
 
     accel = Math.cos this.degree * (Math.PI/180)
 
@@ -170,7 +171,7 @@ tm.define "Enta",
 tm.define "Enemy",
   superClass: "tm.app.Sprite"
   init: ->
-    this.superInit "tina", ENEMY_WIDTH/1.4, ENEMY_HEIGHT/1.4
+    this.superInit "tina", ENEMY_WIDTH/ENEMY_SCALE_FACTOR, ENEMY_HEIGHT/ENEMY_SCALE_FACTOR
     this.speed = Math.rand 6,12
     this.counted = false
 
@@ -179,6 +180,6 @@ tm.define "Enemy",
 
     if this.y > SCREEN_HEIGHT + this.height
       this.remove()
-    if ! this.counted and this.y > SCREEN_HEIGHT - PLAYER_HEIGHT/1.4 -20
+    if ! this.counted and this.y > PLAYER_POSITION_Y
       score++
       this.counted = true
