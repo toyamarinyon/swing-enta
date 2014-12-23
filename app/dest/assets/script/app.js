@@ -54,6 +54,17 @@ UI_DATA = {
       }
     ]
   },
+  tutorialScene: {
+    children: [
+      {
+        type: "tm.display.Sprite",
+        name: "tutorial",
+        init: ["tutorial"],
+        x: SCREEN_CENTER_X,
+        y: SCREEN_CENTER_Y - 200
+      }
+    ]
+  },
   gameScene: {
     children: [
       {
@@ -124,7 +135,8 @@ ASSETS = {
   "titleButton": "assets/image/btn.png",
   "titleBack": "assets/image/bg.png",
   "playButton": "assets/image/playButton.png",
-  "bgm": "assets/sound/bgm.mp3"
+  "bgm": "assets/sound/bgm.mp3",
+  "tutorial": "assets/image/setumeiLead.png"
 };
 
 
@@ -167,6 +179,20 @@ tm.define("TitleScene", {
     this.superInit();
     this.fromJSON(UI_DATA.gameScene);
     this.fromJSON(UI_DATA.titleScene);
+    this.ground.y = SCREEN_HEIGHT - this.ground.height / 2;
+    return this.addEventListener("pointingend", function(event) {
+      return event.app.replaceScene(TutorialScene());
+    });
+  }
+});
+
+tm.define("TutorialScene", {
+  superClass: "tm.app.Scene",
+  init: function() {
+    this.superInit();
+    this.fromJSON(UI_DATA.gameScene);
+    this.fromJSON(UI_DATA.tutorialScene);
+    this.fromJSON(UI_DATA.playerAndTimeLabel);
     this.ground.y = SCREEN_HEIGHT - this.ground.height / 2;
     return this.addEventListener("pointingend", function(event) {
       return event.app.replaceScene(MainScene());

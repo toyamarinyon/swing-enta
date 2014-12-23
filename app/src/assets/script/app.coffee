@@ -38,6 +38,14 @@ UI_DATA =
       x: SCREEN_CENTER_X
       y: SCREEN_HEIGHT - 300
     ]
+  tutorialScene:
+    children: [
+      type: "tm.display.Sprite"
+      name: "tutorial"
+      init: ["tutorial"]
+      x: SCREEN_CENTER_X
+      y: SCREEN_CENTER_Y - 200
+    ]
   gameScene:
     children: [
       type: "tm.display.Sprite"
@@ -98,6 +106,7 @@ ASSETS =
   "titleBack": "assets/image/bg.png"
   "playButton": "assets/image/playButton.png"
   "bgm" : "assets/sound/bgm.mp3"
+  "tutorial" : "assets/image/setumeiLead.png"
 ###
 ASSETS }}}
 ###
@@ -134,6 +143,17 @@ tm.define "TitleScene",
     this.superInit()
     this.fromJSON UI_DATA.gameScene
     this.fromJSON UI_DATA.titleScene
+    this.ground.y = SCREEN_HEIGHT - this.ground.height/2
+    this.addEventListener "pointingend", (event) ->
+      event.app.replaceScene TutorialScene()
+
+tm.define "TutorialScene",
+  superClass: "tm.app.Scene"
+  init: ->
+    this.superInit()
+    this.fromJSON UI_DATA.gameScene
+    this.fromJSON UI_DATA.tutorialScene
+    this.fromJSON UI_DATA.playerAndTimeLabel
     this.ground.y = SCREEN_HEIGHT - this.ground.height/2
     this.addEventListener "pointingend", (event) ->
       event.app.replaceScene MainScene()
