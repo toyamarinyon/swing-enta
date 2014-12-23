@@ -9,8 +9,9 @@ SCREEN_CENTER_Y = SCREEN_HEIGHT/2
 
 PLAYER_WIDTH = 298
 PLAYER_HEIGHT = 358
-PLAYER_POSITION_Y = SCREEN_HEIGHT - PLAYER_HEIGHT/1.4 -20
 PLAYER_SCALE_FACTOR = 2.0
+PLAYER_POSITION_Y = SCREEN_HEIGHT - PLAYER_HEIGHT/PLAYER_SCALE_FACTOR - 60
+
 
 ENEMY_WIDTH  = 161
 ENEMY_HEIGHT = 156
@@ -60,9 +61,12 @@ UI_DATA =
       init: ["ground"]
       x: SCREEN_CENTER_X
       y:  SCREEN_HEIGHT
-    ]
-  scoreLabel:
-    children: [
+     ,
+      type: "Enta"
+      name: "enta"
+      x: SCREEN_CENTER_X
+      y: PLAYER_POSITION_Y
+     ,
       type: "tm.display.Label"
       name: "timeLabel"
       x: SCREEN_CENTER_X
@@ -77,6 +81,9 @@ UI_DATA =
 UI.json }}}
 ###
 
+###
+ASSETS {{{
+###
 ASSETS = 
   "entaRight": "assets/image/entaRight.png"
   "entaLeft": "assets/image/entaLeft.png"
@@ -86,6 +93,9 @@ ASSETS =
   "tina": "assets/image/tina.png"
   "titleBack": "assets/image/bg.png"
   "playButton": "assets/image/playButton.png"
+###
+ASSETS }}}
+###
 
 score = 0
 enableController = false
@@ -128,13 +138,7 @@ tm.define "MainScene",
 
     this.ground.y = SCREEN_HEIGHT - this.ground.height/2
 
-    this.enta = Enta().addChildTo this
-    this.enta.position.set SCREEN_WIDTH/2, PLAYER_POSITION_Y
-    this.fromJSON UI_DATA.scoreLabel
-
     this.enemyGroup = tm.app.CanvasElement().addChildTo this
-
-
   update: (app) ->
     this.worldSpeed+= 0.05 if this.worldSpeed < 5
     this.ground.y += this.worldSpeed
@@ -187,6 +191,7 @@ tm.define "Enta",
 
   update: (app) ->
     if app.pointing.getPointingStart()
+      app.pointing.x
       this.direction = if this.direction is "left" then "right" else "left"
 
     if this.direction is "left"

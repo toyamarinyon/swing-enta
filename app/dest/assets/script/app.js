@@ -16,9 +16,9 @@ PLAYER_WIDTH = 298;
 
 PLAYER_HEIGHT = 358;
 
-PLAYER_POSITION_Y = SCREEN_HEIGHT - PLAYER_HEIGHT / 1.4 - 20;
-
 PLAYER_SCALE_FACTOR = 2.0;
+
+PLAYER_POSITION_Y = SCREEN_HEIGHT - PLAYER_HEIGHT / PLAYER_SCALE_FACTOR - 60;
 
 ENEMY_WIDTH = 161;
 
@@ -78,12 +78,12 @@ UI_DATA = {
         init: ["ground"],
         x: SCREEN_CENTER_X,
         y: SCREEN_HEIGHT
-      }
-    ]
-  },
-  scoreLabel: {
-    children: [
-      {
+      }, {
+        type: "Enta",
+        name: "enta",
+        x: SCREEN_CENTER_X,
+        y: PLAYER_POSITION_Y
+      }, {
         type: "tm.display.Label",
         name: "timeLabel",
         x: SCREEN_CENTER_X,
@@ -103,6 +103,11 @@ UI_DATA = {
 UI.json }}}
  */
 
+
+/*
+ASSETS {{{
+ */
+
 ASSETS = {
   "entaRight": "assets/image/entaRight.png",
   "entaLeft": "assets/image/entaLeft.png",
@@ -113,6 +118,11 @@ ASSETS = {
   "titleBack": "assets/image/bg.png",
   "playButton": "assets/image/playButton.png"
 };
+
+
+/*
+ASSETS }}}
+ */
 
 score = 0;
 
@@ -155,9 +165,6 @@ tm.define("MainScene", {
     score = 0;
     enableController = false;
     this.ground.y = SCREEN_HEIGHT - this.ground.height / 2;
-    this.enta = Enta().addChildTo(this);
-    this.enta.position.set(SCREEN_WIDTH / 2, PLAYER_POSITION_Y);
-    this.fromJSON(UI_DATA.scoreLabel);
     return this.enemyGroup = tm.app.CanvasElement().addChildTo(this);
   },
   update: function(app) {
@@ -223,6 +230,7 @@ tm.define("Enta", {
   update: function(app) {
     var accel;
     if (app.pointing.getPointingStart()) {
+      app.pointing.x;
       this.direction = this.direction === "left" ? "right" : "left";
     }
     if (this.direction === "left") {
