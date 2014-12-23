@@ -1,6 +1,11 @@
 
+###
+Define {{{
+###
 SCREEN_WIDTH = 640
 SCREEN_HEIGHT = 960
+SCREEN_CENTER_X = SCREEN_WIDTH/2
+SCREEN_CENTER_Y = SCREEN_HEIGHT/2
 
 PLAYER_WIDTH = 298
 PLAYER_HEIGHT = 358
@@ -10,13 +15,57 @@ PLAYER_SCALE_FACTOR = 2.0
 ENEMY_WIDTH  = 161
 ENEMY_HEIGHT = 156
 ENEMY_SCALE_FACTOR = 2.0
+###
+Define }}}
+###
 
+###
+UI.json {{{
+###
 UI_DATA =
-  main:
+  titleScene:
     children: [
-      type: "Label"
+      type: "tm.display.Sprite"
+      name: "back"
+      init: ["titleBack"]
+      x: SCREEN_CENTER_X
+      y: SCREEN_CENTER_Y
+     ,
+      type: "tm.display.Sprite"
+      name: "playButton"
+      init: ["playButton"]
+      x: SCREEN_CENTER_X
+      y: SCREEN_CENTER_Y
+    ]
+  gameScene:
+    children: [
+      type: "tm.display.Sprite"
+      name: "back1"
+      init: ["sky"]
+      x: SCREEN_CENTER_X
+      y: SCREEN_CENTER_Y
+      width: SCREEN_WIDTH
+      height: SCREEN_HEIGHT
+     ,
+      type: "tm.display.Sprite"
+      name: "back2"
+      init: ["skyNogu"]
+      x: SCREEN_CENTER_X
+      y: -SCREEN_CENTER_Y
+      width: SCREEN_WIDTH
+      height: SCREEN_HEIGHT
+     ,
+      type: "tm.display.Sprite"
+      name: "ground"
+      init: ["ground"]
+      x: SCREEN_CENTER_X
+      y:  SCREEN_HEIGHT
+    ]
+  scoreLabel:
+    children: [
+      type: "tm.display.Label"
       name: "timeLabel"
-      x: 200
+      x: SCREEN_CENTER_X
       y: 120
       width: SCREEN_WIDTH
       fillStyle: "black"
@@ -24,6 +73,9 @@ UI_DATA =
       fontSize: 60
       align: "center"
     ]
+###
+UI.json }}}
+###
 
 ASSETS = 
   "entaRight": "assets/image/entaRight.png"
@@ -32,6 +84,8 @@ ASSETS =
   "skyNogu": "assets/image/skyNogu.png"
   "ground": "assets/image/ground.png"
   "tina": "assets/image/tina.png"
+  "titleBack": "assets/image/bg.png"
+  "playButton": "assets/image/playButton.png"
 
 score = 0
 enableController = false
@@ -56,10 +110,8 @@ tm.main ->
 tm.define "TitleScene",
   superClass: "tm.app.TitleScene"
   init: ->
-    this.superInit
-      title: "空飛ぶエン太"
-      width: SCREEN_WIDTH
-      height: SCREEN_HEIGHT
+    this.superInit()
+    this.fromJSON UI_DATA.titleScene
     this.addEventListener "pointingend", (event) ->
       event.app.replaceScene MainScene()
 
@@ -67,22 +119,18 @@ tm.define "MainScene",
   superClass: "tm.app.Scene"
   init: ->
     this.superInit()
+    this.fromJSON UI_DATA.gameScene
+
     this.timer = 0
     this.worldSpeed = 0
     score = 0
     enableController = false
 
-    this.back1 = tm.app.Sprite("sky", SCREEN_WIDTH, SCREEN_HEIGHT).addChildTo this
-    this.back1.position.set SCREEN_WIDTH/2, SCREEN_HEIGHT/2
-    this.back2 = tm.app.Sprite("skyNogu", SCREEN_WIDTH, SCREEN_HEIGHT).addChildTo this
-    this.back2.position.set SCREEN_WIDTH/2, -SCREEN_HEIGHT/2
-
-    this.ground = tm.app.Sprite("ground").addChildTo this
-    this.ground.position.set SCREEN_WIDTH/2, SCREEN_HEIGHT - this.ground.height/2
+    this.ground.y = SCREEN_HEIGHT - this.ground.height/2
 
     this.enta = Enta().addChildTo this
     this.enta.position.set SCREEN_WIDTH/2, PLAYER_POSITION_Y
-    this.fromJSON UI_DATA.main
+    this.fromJSON UI_DATA.scoreLabel
 
     this.enemyGroup = tm.app.CanvasElement().addChildTo this
 
