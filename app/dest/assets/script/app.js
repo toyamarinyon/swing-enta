@@ -261,7 +261,7 @@ tm.define("EndScene", {
     });
   },
   onnextscene: function(event) {
-    return event.target.app.replaceScene(TitleScene());
+    return event.target.app.replaceScene(TutorialScene());
   }
 });
 

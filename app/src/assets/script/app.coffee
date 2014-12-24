@@ -213,7 +213,7 @@ tm.define "EndScene",
       height: SCREEN_HEIGHT
       related: "thank you for playing!"
   onnextscene: (event) ->
-    event.target.app.replaceScene TitleScene()
+    event.target.app.replaceScene TutorialScene()
 
 tm.define "Enta",
   superClass: "tm.app.Sprite"
