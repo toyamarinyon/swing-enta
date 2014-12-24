@@ -2,7 +2,7 @@
 /*
 Define {{{
  */
-var ASSETS, ENEMY_HEIGHT, ENEMY_SCALE_FACTOR, ENEMY_WIDTH, PLAYER_HEIGHT, PLAYER_POSITION_Y, PLAYER_SCALE_FACTOR, PLAYER_WIDTH, SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH, UI_DATA, bgmPlayed, enableController, score;
+var ASSETS, ENEMY_HEIGHT, ENEMY_SCALE_FACTOR, ENEMY_WIDTH, PLAYER_HEIGHT, PLAYER_POSITION_Y, PLAYER_SCALE_FACTOR, PLAYER_WIDTH, SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH, UI_DATA, bgmPlayed, enableController, enemyTimer, score;
 
 SCREEN_WIDTH = 640;
 
@@ -148,6 +148,8 @@ score = 0;
 
 enableController = false;
 
+enemyTimer = 60;
+
 tm.main(function() {
   var app, loadingScene;
   app = tm.display.CanvasApp("#World");
@@ -210,6 +212,7 @@ tm.define("MainScene", {
     this.worldSpeed = 0;
     score = 0;
     enableController = false;
+    enemyTimer = 60;
     this.ground.y = SCREEN_HEIGHT - this.ground.height / 2;
     return this.enemyGroup = tm.app.CanvasElement().addChildTo(this);
   },
@@ -232,7 +235,7 @@ tm.define("MainScene", {
     }
     this.timeLabel.text = score;
     ++this.timer;
-    if (this.timer % 60 === 0) {
+    if (this.timer % enemyTimer === 0) {
       enemy = Enemy().addChildTo(this.enemyGroup);
       enemy.x = Math.rand(0, SCREEN_WIDTH);
       enemy.y = 0 - enemy.height;
@@ -341,6 +344,18 @@ tm.define("Enemy", {
     }
     if (!this.counted && this.y > PLAYER_POSITION_Y) {
       score++;
+      if (score === 20) {
+        enemyTimer = 30;
+      }
+      if (score === 30) {
+        enemyTimer = 20;
+      }
+      if (score === 40) {
+        enemyTimer = 10;
+      }
+      if (score === 50) {
+        enemyTimer = 5;
+      }
       return this.counted = true;
     }
   }

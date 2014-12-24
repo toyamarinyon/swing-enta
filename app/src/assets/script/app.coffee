@@ -113,6 +113,7 @@ ASSETS }}}
 
 score = 0
 enableController = false
+enemyTimer = 60
 
 tm.main ->
   app = tm.display.CanvasApp "#World"
@@ -169,6 +170,7 @@ tm.define "MainScene",
     this.worldSpeed = 0
     score = 0
     enableController = false
+    enemyTimer = 60
 
     this.ground.y = SCREEN_HEIGHT - this.ground.height/2
 
@@ -190,7 +192,7 @@ tm.define "MainScene",
 
     ++this.timer
 
-    if this.timer % 60 is 0
+    if this.timer % enemyTimer is 0
       enemy = Enemy().addChildTo this.enemyGroup
       enemy.x = Math.rand 0, SCREEN_WIDTH
       enemy.y = 0 - enemy.height
@@ -281,4 +283,12 @@ tm.define "Enemy",
       this.remove()
     if ! this.counted and this.y > PLAYER_POSITION_Y
       score++
+      if score is 20
+        enemyTimer = 30
+      if score is 30
+        enemyTimer = 20
+      if score is 40
+        enemyTimer = 10
+      if score is 50
+        enemyTimer = 5
       this.counted = true
