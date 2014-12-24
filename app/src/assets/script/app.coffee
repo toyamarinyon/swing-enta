@@ -206,7 +206,7 @@ tm.define "EndScene",
   init: (score) ->
     this.superInit
       score: score
-      msg: "空飛ぶエン太"
+      msg: "空飛ぶエンタ"
       hastags: ["FlyingEnta!"]
       url: "http://icebreak.jp"
       width: SCREEN_WIDTH
