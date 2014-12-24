@@ -277,8 +277,8 @@ tm.define("Enta", {
   },
   update: function(app) {
     var moveX;
-    if (app.pointing.getPointingStart() && this.x !== app.pointing.x) {
-      this.direction = app.pointing.x < this.x ? "left" : "right";
+    if (app.pointing.getPointingStart()) {
+      this.direction = app.pointing.x < SCREEN_WIDTH / 2 ? "left" : "right";
       if (this.direction === "left") {
         if (this.prevFrameDirection !== this.direction) {
           this.accel = 1;

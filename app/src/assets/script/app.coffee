@@ -226,8 +226,8 @@ tm.define "Enta",
     this.origin.y = 0
 
   update: (app) ->
-    if app.pointing.getPointingStart() and this.x isnt app.pointing.x
-      this.direction = if app.pointing.x < this.x then "left" else "right"
+    if app.pointing.getPointingStart()
+      this.direction = if app.pointing.x < SCREEN_WIDTH/2 then "left" else "right"
       # this.direction = if this.direction is "left" then "right" else "left"
       if this.direction is "left"
         if this.prevFrameDirection isnt this.direction
