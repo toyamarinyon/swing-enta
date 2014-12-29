@@ -144,11 +144,23 @@ ASSETS = {
 ASSETS }}}
  */
 
+
+/*
+Global Variables {{{
+ */
+
 score = 0;
 
 enableController = false;
 
 enemyTimer = 60;
+
+bgmPlayed = false;
+
+
+/*
+Global Variables }}}
+ */
 
 tm.main(function() {
   var app, loadingScene;
@@ -165,15 +177,12 @@ tm.main(function() {
   app.replaceScene(loadingScene);
   app.run();
   return app.canvas.element.addEventListener("touchstart", function() {
-    var bgmPlayed;
     if (!bgmPlayed) {
       tm.asset.AssetManager.get("bgm").setLoop(true).play();
       return bgmPlayed = true;
     }
   });
 });
-
-bgmPlayed = false;
 
 tm.define("TitleScene", {
   superClass: "tm.app.TitleScene",

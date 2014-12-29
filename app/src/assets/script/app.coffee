@@ -111,9 +111,16 @@ ASSETS =
 ASSETS }}}
 ###
 
+###
+Global Variables {{{
+###
 score = 0
 enableController = false
 enemyTimer = 60
+bgmPlayed = false
+###
+Global Variables }}}
+###
 
 tm.main ->
   app = tm.display.CanvasApp "#World"
@@ -137,7 +144,6 @@ tm.main ->
       bgmPlayed = true
 
 
-bgmPlayed = false
 tm.define "TitleScene",
   superClass: "tm.app.TitleScene"
   init: ->
