@@ -1,4 +1,16 @@
 ###
+Global Variables {{{
+###
+score = 0
+gameTimer = 60
+enableController = false
+enemyTimer = 60
+bgmPlayed = false
+###
+Global Variables }}}
+###
+
+###
 Define {{{
 ###
 SCREEN_WIDTH = 640
@@ -11,10 +23,11 @@ PLAYER_HEIGHT = 358
 PLAYER_SCALE_FACTOR = 2.0
 PLAYER_POSITION_Y = SCREEN_HEIGHT - PLAYER_HEIGHT/PLAYER_SCALE_FACTOR - 60
 
-
 ENEMY_WIDTH  = 161
 ENEMY_HEIGHT = 156
 ENEMY_SCALE_FACTOR = 2.0
+
+GAME_LIMIT_TIMER = 30
 ###
 Define }}}
 ###
@@ -76,15 +89,32 @@ UI_DATA =
       x: SCREEN_CENTER_X
       y: PLAYER_POSITION_Y
      ,
-      type: "tm.display.Label"
-      name: "timeLabel"
+      type: "tm.display.Sprite"
+      name: "gameScoreBackground"
+      init: ["gameScoreBackground"]
       x: SCREEN_CENTER_X
-      y: 120
+      y: 0
+      originY: 0
+     ,
+      type: "tm.display.Label"
+      name: "timerLabel"
+      x: SCREEN_CENTER_X + 80
+      y: 40
       width: SCREEN_WIDTH
       fillStyle: "black"
-      text: " "
-      fontSize: 60
-      align: "center"
+      text: "0"
+      fontSize: 30
+      align: "right"
+     ,
+      type: "tm.display.Label"
+      name: "scoreLabel"
+      x: SCREEN_CENTER_X + 280
+      y: 40
+      width: SCREEN_WIDTH
+      fillStyle: "black"
+      text: "0"
+      fontSize: 30
+      align: "right"
     ]
 ###
 UI.json }}}
@@ -106,25 +136,16 @@ ASSETS =
   "playButton": "assets/image/playButton.png"
   "bgm" : "assets/sound/bgm.mp3"
   "tutorial" : "assets/image/setumeiLead.png"
+  "gameScoreBackground": "assets/image/header1.png"
 ###
 ASSETS }}}
-###
-
-###
-Global Variables {{{
-###
-score = 0
-enableController = false
-enemyTimer = 60
-bgmPlayed = false
-###
-Global Variables }}}
 ###
 
 tm.main ->
   app = tm.display.CanvasApp "#World"
   app.resize SCREEN_WIDTH, SCREEN_HEIGHT
   app.fitWindow()
+  app.fps = 60
   app.background = "rgb(0, 0, 0)"
 
   loadingScene = tm.app.LoadingScene
@@ -177,11 +198,12 @@ tm.define "MainScene",
     enableController = false
     enemyTimer = 60
 
+    this.timerLabel.text = gameTimer = GAME_LIMIT_TIMER
     this.ground.y = SCREEN_HEIGHT - this.ground.height/2
 
     this.enemyGroup = tm.app.CanvasElement().addChildTo this
   update: (app) ->
-    this.worldSpeed+= 0.05 if this.worldSpeed < 5
+    this.worldSpeed+= 0.05 if this.worldSpeed < 2.0
     this.ground.y += this.worldSpeed
     this.back1.y += this.worldSpeed
     this.back2.y += this.worldSpeed
@@ -193,9 +215,14 @@ tm.define "MainScene",
       enableController = true
 
 
-    this.timeLabel.text = score
+    score += this.worldSpeed / 100
+    this.scoreLabel.text = Math.round score
 
     ++this.timer
+
+    if this.timer % 60 is 0
+      gameTimer--
+      this.timerLabel.text = gameTimer
 
     if this.timer % enemyTimer is 0
       enemy = Enemy().addChildTo this.enemyGroup
@@ -205,8 +232,8 @@ tm.define "MainScene",
     self = this
     enemies = this.enemyGroup.children
     enemies.each (enemy) ->
-      if self.enta.isHitElement enemy
-        app.replaceScene EndScene(score)
+      # if self.enta.isHitElement enemy
+        # app.replaceScene EndScene(score)
 
 tm.define "EndScene",
   superClass: "tm.app.ResultScene"
@@ -239,10 +266,10 @@ tm.define "Enta",
 
     if enableController
       if this.direction is "left"
-        this.accel-=1.0 if this.accel > -10.0
+        this.accel-=0.2 if this.accel > -8.0
         this.image = "entaLeft"
       if this.direction is "right"
-        this.accel+=1.0 if this.accel < 10.0
+        this.accel+=0.2 if this.accel < 8.0
         this.image = "entaRight"
 
       this.x += this.accel
@@ -257,7 +284,7 @@ tm.define "Enemy",
   superClass: "tm.app.Sprite"
   init: ->
     this.superInit "tina", ENEMY_WIDTH/ENEMY_SCALE_FACTOR, ENEMY_HEIGHT/ENEMY_SCALE_FACTOR
-    this.speed = Math.rand 6,12
+    this.speed = Math.rand 2,6
     this.counted = false
 
   update: (app)->
@@ -266,13 +293,4 @@ tm.define "Enemy",
     if this.y > SCREEN_HEIGHT + this.height
       this.remove()
     if ! this.counted and this.y > PLAYER_POSITION_Y
-      score++
-      if score is 20
-        enemyTimer = 30
-      if score is 30
-        enemyTimer = 20
-      if score is 40
-        enemyTimer = 10
-      if score is 50
-        enemyTimer = 5
       this.counted = true

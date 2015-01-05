@@ -1,8 +1,28 @@
 
 /*
+Global Variables {{{
+ */
+var ASSETS, ENEMY_HEIGHT, ENEMY_SCALE_FACTOR, ENEMY_WIDTH, GAME_LIMIT_TIMER, PLAYER_HEIGHT, PLAYER_POSITION_Y, PLAYER_SCALE_FACTOR, PLAYER_WIDTH, SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH, UI_DATA, bgmPlayed, enableController, enemyTimer, gameTimer, score;
+
+score = 0;
+
+gameTimer = 60;
+
+enableController = false;
+
+enemyTimer = 60;
+
+bgmPlayed = false;
+
+
+/*
+Global Variables }}}
+ */
+
+
+/*
 Define {{{
  */
-var ASSETS, ENEMY_HEIGHT, ENEMY_SCALE_FACTOR, ENEMY_WIDTH, PLAYER_HEIGHT, PLAYER_POSITION_Y, PLAYER_SCALE_FACTOR, PLAYER_WIDTH, SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH, UI_DATA, bgmPlayed, enableController, enemyTimer, score;
 
 SCREEN_WIDTH = 640;
 
@@ -25,6 +45,8 @@ ENEMY_WIDTH = 161;
 ENEMY_HEIGHT = 156;
 
 ENEMY_SCALE_FACTOR = 2.0;
+
+GAME_LIMIT_TIMER = 30;
 
 
 /*
@@ -100,15 +122,32 @@ UI_DATA = {
         x: SCREEN_CENTER_X,
         y: PLAYER_POSITION_Y
       }, {
-        type: "tm.display.Label",
-        name: "timeLabel",
+        type: "tm.display.Sprite",
+        name: "gameScoreBackground",
+        init: ["gameScoreBackground"],
         x: SCREEN_CENTER_X,
-        y: 120,
+        y: 0,
+        originY: 0
+      }, {
+        type: "tm.display.Label",
+        name: "timerLabel",
+        x: SCREEN_CENTER_X + 80,
+        y: 40,
         width: SCREEN_WIDTH,
         fillStyle: "black",
-        text: " ",
-        fontSize: 60,
-        align: "center"
+        text: "0",
+        fontSize: 30,
+        align: "right"
+      }, {
+        type: "tm.display.Label",
+        name: "scoreLabel",
+        x: SCREEN_CENTER_X + 280,
+        y: 40,
+        width: SCREEN_WIDTH,
+        fillStyle: "black",
+        text: "0",
+        fontSize: 30,
+        align: "right"
       }
     ]
   }
@@ -136,7 +175,8 @@ ASSETS = {
   "titleBack": "assets/image/bg.png",
   "playButton": "assets/image/playButton.png",
   "bgm": "assets/sound/bgm.mp3",
-  "tutorial": "assets/image/setumeiLead.png"
+  "tutorial": "assets/image/setumeiLead.png",
+  "gameScoreBackground": "assets/image/header1.png"
 };
 
 
@@ -144,29 +184,12 @@ ASSETS = {
 ASSETS }}}
  */
 
-
-/*
-Global Variables {{{
- */
-
-score = 0;
-
-enableController = false;
-
-enemyTimer = 60;
-
-bgmPlayed = false;
-
-
-/*
-Global Variables }}}
- */
-
 tm.main(function() {
   var app, loadingScene;
   app = tm.display.CanvasApp("#World");
   app.resize(SCREEN_WIDTH, SCREEN_HEIGHT);
   app.fitWindow();
+  app.fps = 60;
   app.background = "rgb(0, 0, 0)";
   loadingScene = tm.app.LoadingScene({
     assets: ASSETS,
@@ -222,12 +245,13 @@ tm.define("MainScene", {
     score = 0;
     enableController = false;
     enemyTimer = 60;
+    this.timerLabel.text = gameTimer = GAME_LIMIT_TIMER;
     this.ground.y = SCREEN_HEIGHT - this.ground.height / 2;
     return this.enemyGroup = tm.app.CanvasElement().addChildTo(this);
   },
   update: function(app) {
     var enemies, enemy, self;
-    if (this.worldSpeed < 5) {
+    if (this.worldSpeed < 2.0) {
       this.worldSpeed += 0.05;
     }
     this.ground.y += this.worldSpeed;
@@ -242,8 +266,13 @@ tm.define("MainScene", {
     if (this.worldSpeed > 2.0) {
       enableController = true;
     }
-    this.timeLabel.text = score;
+    score += this.worldSpeed / 100;
+    this.scoreLabel.text = Math.round(score);
     ++this.timer;
+    if (this.timer % 60 === 0) {
+      gameTimer--;
+      this.timerLabel.text = gameTimer;
+    }
     if (this.timer % enemyTimer === 0) {
       enemy = Enemy().addChildTo(this.enemyGroup);
       enemy.x = Math.rand(0, SCREEN_WIDTH);
@@ -251,11 +280,7 @@ tm.define("MainScene", {
     }
     self = this;
     enemies = this.enemyGroup.children;
-    return enemies.each(function(enemy) {
-      if (self.enta.isHitElement(enemy)) {
-        return app.replaceScene(EndScene(score));
-      }
-    });
+    return enemies.each(function(enemy) {});
   }
 });
 
@@ -293,14 +318,14 @@ tm.define("Enta", {
     }
     if (enableController) {
       if (this.direction === "left") {
-        if (this.accel > -10.0) {
-          this.accel -= 1.0;
+        if (this.accel > -8.0) {
+          this.accel -= 0.2;
         }
         this.image = "entaLeft";
       }
       if (this.direction === "right") {
-        if (this.accel < 10.0) {
-          this.accel += 1.0;
+        if (this.accel < 8.0) {
+          this.accel += 0.2;
         }
         this.image = "entaRight";
       }
@@ -320,7 +345,7 @@ tm.define("Enemy", {
   superClass: "tm.app.Sprite",
   init: function() {
     this.superInit("tina", ENEMY_WIDTH / ENEMY_SCALE_FACTOR, ENEMY_HEIGHT / ENEMY_SCALE_FACTOR);
-    this.speed = Math.rand(6, 12);
+    this.speed = Math.rand(2, 6);
     return this.counted = false;
   },
   update: function(app) {
@@ -329,19 +354,6 @@ tm.define("Enemy", {
       this.remove();
     }
     if (!this.counted && this.y > PLAYER_POSITION_Y) {
-      score++;
-      if (score === 20) {
-        enemyTimer = 30;
-      }
-      if (score === 30) {
-        enemyTimer = 20;
-      }
-      if (score === 40) {
-        enemyTimer = 10;
-      }
-      if (score === 50) {
-        enemyTimer = 5;
-      }
       return this.counted = true;
     }
   }
