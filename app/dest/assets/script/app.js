@@ -288,54 +288,31 @@ tm.define("Enta", {
     return this.origin.y = 0;
   },
   update: function(app) {
-    var moveX;
     if (app.pointing.getPointingStart()) {
       this.direction = app.pointing.x < SCREEN_WIDTH / 2 ? "left" : "right";
+    }
+    if (enableController) {
       if (this.direction === "left") {
-        if (this.prevFrameDirection !== this.direction) {
-          this.accel = 1;
-        } else {
-          if (this.accel < 2) {
-            this.accel++;
-          }
+        if (this.accel > -10.0) {
+          this.accel -= 1.0;
         }
-      } else {
-        if (this.prevFrameDirection !== this.direction) {
-          this.accel = -1;
-        } else {
-          if (this.accel > -2) {
-            this.accel--;
-          }
+        this.image = "entaLeft";
+      }
+      if (this.direction === "right") {
+        if (this.accel < 10.0) {
+          this.accel += 1.0;
         }
+        this.image = "entaRight";
       }
-    }
-    if (this.direction === "left") {
-      this.image = "entaLeft";
-    } else {
-      this.image = "entaRight";
-    }
-    if (enableController && (this.prevFrameDirection !== this.direction || this.degree > 90 - 35 && this.degree < 90 + 35)) {
-      this.degree += this.accel;
-      if (this.prevFrameDirection !== this.direction) {
-        this.degree += this.accel;
-      }
-    }
-    moveX = Math.cos(this.degree * (Math.PI / 180));
-    this.x += moveX * 20.0;
-    this.rotation = -(this.degree - 90);
-    if (this.rotation < -35) {
-      this.rotation = -35;
-    }
-    if (this.rotation > 35) {
-      this.rotation = 35;
+      this.x += this.accel;
+      this.rotation = this.accel * 2.0;
     }
     if (this.x > SCREEN_WIDTH) {
       this.x = SCREEN_WIDTH;
     }
     if (this.x < 0) {
-      this.x = 0;
+      return this.x = 0;
     }
-    return this.prevFrameDirection = this.direction;
   }
 });
 

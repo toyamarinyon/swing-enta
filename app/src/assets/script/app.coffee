@@ -1,4 +1,3 @@
-
 ###
 Define {{{
 ###
@@ -236,44 +235,23 @@ tm.define "Enta",
   update: (app) ->
     if app.pointing.getPointingStart()
       this.direction = if app.pointing.x < SCREEN_WIDTH/2 then "left" else "right"
-      # this.direction = if this.direction is "left" then "right" else "left"
+
+
+    if enableController
       if this.direction is "left"
-        if this.prevFrameDirection isnt this.direction
-          this.accel = 1
-        else
-          this.accel++ if this.accel < 2
-      else
-        if this.prevFrameDirection isnt this.direction
-          this.accel = -1
-        else
-          this.accel-- if this.accel > -2
+        this.accel-=1.0 if this.accel > -10.0
+        this.image = "entaLeft"
+      if this.direction is "right"
+        this.accel+=1.0 if this.accel < 10.0
+        this.image = "entaRight"
 
-    if this.direction is "left"
-      this.image = "entaLeft"
-    else
-      this.image = "entaRight"
-
-    if enableController and (this.prevFrameDirection isnt this.direction or this.degree > 90 - 35 and this.degree < 90 + 35)
-      this.degree += this.accel
-      this.degree += this.accel if this.prevFrameDirection isnt this.direction
-
-
-    moveX = Math.cos this.degree * (Math.PI/180)
-    this.x += moveX * 20.0
-
-    this.rotation = -(this.degree - 90)
-
-    if this.rotation < -35
-      this.rotation = -35
-    if this.rotation > 35
-      this.rotation = 35
+      this.x += this.accel
+      this.rotation = this.accel*2.0
 
     if this.x > SCREEN_WIDTH
       this.x = SCREEN_WIDTH
     if this.x < 0
       this.x = 0
-
-    this.prevFrameDirection = this.direction
 
 tm.define "Enemy",
   superClass: "tm.app.Sprite"
