@@ -1,28 +1,4 @@
-
-/*
-Global Variables {{{
- */
 var ASSETS, ENEMY_HEIGHT, ENEMY_SCALE_FACTOR, ENEMY_WIDTH, GAME_LIMIT_TIMER, PLAYER_HEIGHT, PLAYER_POSITION_Y, PLAYER_SCALE_FACTOR, PLAYER_WIDTH, SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH, UI_DATA, bgmPlayed, enableController, enemyTimer, gameTimer, score;
-
-score = 0;
-
-gameTimer = 60;
-
-enableController = false;
-
-enemyTimer = 60;
-
-bgmPlayed = false;
-
-
-/*
-Global Variables }}}
- */
-
-
-/*
-Define {{{
- */
 
 SCREEN_WIDTH = 640;
 
@@ -48,15 +24,31 @@ ENEMY_SCALE_FACTOR = 2.0;
 
 GAME_LIMIT_TIMER = 30;
 
+score = 0;
 
-/*
-Define }}}
- */
+gameTimer = 60;
 
+enableController = false;
 
-/*
-UI.json {{{
- */
+enemyTimer = 60;
+
+bgmPlayed = false;
+
+ASSETS = {
+  "entaRight": "assets/image/entaRight.png",
+  "entaLeft": "assets/image/entaLeft.png",
+  "sky": "assets/image/sky.png",
+  "skyNogu": "assets/image/skyNogu.png",
+  "ground": "assets/image/ground.png",
+  "tina": "assets/image/tina.png",
+  "title": "assets/image/title.png",
+  "titleButton": "assets/image/btn.png",
+  "titleBack": "assets/image/bg.png",
+  "playButton": "assets/image/playButton.png",
+  "bgm": "assets/sound/bgm.mp3",
+  "tutorial": "assets/image/setumeiLead.png",
+  "gameScoreBackground": "assets/image/header1.png"
+};
 
 UI_DATA = {
   titleScene: {
@@ -152,37 +144,6 @@ UI_DATA = {
     ]
   }
 };
-
-
-/*
-UI.json }}}
- */
-
-
-/*
-ASSETS {{{
- */
-
-ASSETS = {
-  "entaRight": "assets/image/entaRight.png",
-  "entaLeft": "assets/image/entaLeft.png",
-  "sky": "assets/image/sky.png",
-  "skyNogu": "assets/image/skyNogu.png",
-  "ground": "assets/image/ground.png",
-  "tina": "assets/image/tina.png",
-  "title": "assets/image/title.png",
-  "titleButton": "assets/image/btn.png",
-  "titleBack": "assets/image/bg.png",
-  "playButton": "assets/image/playButton.png",
-  "bgm": "assets/sound/bgm.mp3",
-  "tutorial": "assets/image/setumeiLead.png",
-  "gameScoreBackground": "assets/image/header1.png"
-};
-
-
-/*
-ASSETS }}}
- */
 
 tm.main(function() {
   var app, loadingScene;
@@ -302,7 +263,7 @@ tm.define("EndScene", {
   }
 });
 
-tm.define("Enta", {
+tm.define("Player", {
   superClass: "tm.app.Sprite",
   direction: "left",
   prevFrameDirection: "left",

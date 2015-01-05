@@ -5,27 +5,28 @@
   "private": false,
   "author": "toyamarinyon",
   "repository": {
-    "type" : "git",
-    "url"  : "git   : //github.com/toyamarinyon/lovelove-aoi.git"
+    "type": "git",
+    "url": "git   : //github.com/toyamarinyon/lovelove-aoi.git"
   },
   "engines": {
-    "node" : "0.10.28",
-    "npm"  : "1.4.9"
+    "node": "0.10.28",
+    "npm": "1.4.9"
   },
   "scripts": {
-    "start"       : "node node_modules/grunt-cli/bin/grunt",
-    "test"        : "node node_modules/grunt-cli/bin/grunt test"
+    "start": "node node_modules/grunt-cli/bin/grunt",
+    "test": "node node_modules/grunt-cli/bin/grunt test"
   },
   "dependencies": {
-    "bower"                 : "latest"
+    "bower": "latest"
   },
   "devDependencies": {
-    "grunt-cli"                  : "latest",
-    "grunt-contrib-connect"      : "latest",
-    "grunt-contrib-watch"        : "latest",
-    "grunt-contrib-jade"         : "latest",
-    "grunt-contrib-coffee"       : "latest",
-    "grunt-contrib-compass"      : "latest",
-    "grunt-concurrent"           : "latest"
+    "grunt-cli": "latest",
+    "grunt-concurrent": "latest",
+    "grunt-contrib-coffee": "latest",
+    "grunt-contrib-compass": "latest",
+    "grunt-contrib-concat": "^0.5.0",
+    "grunt-contrib-connect": "latest",
+    "grunt-contrib-jade": "latest",
+    "grunt-contrib-watch": "latest"
   }
 }
