@@ -56,8 +56,8 @@ module.exports = (grunt) ->
             "./app/src/assets/script/scenes/end.coffee",
 
             "./app/src/assets/script/entities/player.coffee",
-            "./app/src/assets/script/entities/enemy.coffee"
             "./app/src/assets/script/entities/timer.coffee"
+            "./app/src/assets/script/entities/balloon.coffee"
 
           ]
           

@@ -1,12 +1,17 @@
 tm.define "Player",
   superClass: "tm.app.Sprite"
-  direction: "left"
-  prevFrameDirection: "left"
+  direction: "right"
+  prevFrameDirection: "right"
   degree: 90
   accel: 0
+  hasBallons: 1
   init: ->
     this.superInit "entaRight", PLAYER_WIDTH/PLAYER_SCALE_FACTOR, PLAYER_HEIGHT/PLAYER_SCALE_FACTOR
     this.origin.y = 0
+    this.balloonImage = tm.app.Sprite("balloonRight1", BALLOON_WIDTH/PLAYER_SCALE_FACTOR, BALLOON_HEIGHT/PLAYER_SCALE_FACTOR).addChildTo this
+    this.balloonImage.visible = true
+    this.balloonImage.y -= 13
+    this.balloonImage.x -= 10
 
   update: (app) ->
     if app.pointing.getPointingStart()
@@ -17,9 +22,13 @@ tm.define "Player",
       if this.direction is "left"
         this.accel-=0.2 if this.accel > -8.0
         this.image = "entaLeft"
+        this.balloonImage.image = "balloonLeft"+this.hasBallons
+        this.balloonImage.x = 10
       if this.direction is "right"
         this.accel+=0.2 if this.accel < 8.0
         this.image = "entaRight"
+        this.balloonImage.image = "balloonRight"+this.hasBallons
+        this.balloonImage.x = -10
 
       this.x += this.accel
       this.rotation = this.accel*2.0
@@ -30,4 +39,9 @@ tm.define "Player",
     if this.x < 0
       this.x = 0
       this.accel = 0
+
+  getBalloon: ->
+    this.hasBallons++
+
+
 

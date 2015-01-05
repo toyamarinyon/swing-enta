@@ -2,7 +2,7 @@ tm.define "Timer",
   superClass: "tm.app.AnimationSprite"
 
   init: ->
-    this.speed = Math.rand 4,6
+    this.speed = Math.rand 1,2
     ss = tm.asset.SpriteSheet
       image: "itemTimer"
       frame:
@@ -18,7 +18,7 @@ tm.define "Timer",
     this.gotoAndPlay "blink"
 
   update: (app)->
-    this.y += this.speed
+    this.y += this.speed + worldSpeed
 
     if this.y > SCREEN_HEIGHT + this.height
       this.remove()

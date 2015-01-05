@@ -90,4 +90,16 @@ UI_DATA =
       align: "center"
       visible: false
       fontWeight: "bold"
+     ,
+      type: "tm.display.Label"
+      name: "balloonLabel"
+      x: SCREEN_CENTER_X + 230
+      y: 90
+      width: SCREEN_WIDTH
+      fillStyle: "orange"
+      text: "SPEED UP！"
+      fontSize: 30
+      align: "center"
+      visible: false
+      fontWeight: "bold"
     ]
