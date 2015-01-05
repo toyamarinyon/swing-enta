@@ -81,12 +81,13 @@ UI_DATA =
      ,
       type: "tm.display.Label"
       name: "extendedTimeLabel"
-      x: SCREEN_CENTER_X + 80
-      y: 80
+      x: SCREEN_CENTER_X + 72
+      y: 90
       width: SCREEN_WIDTH
       fillStyle: "orange"
       text: "＋３秒！"
       fontSize: 30
       align: "center"
       visible: false
+      fontWeight: "bold"
     ]

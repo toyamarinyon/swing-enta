@@ -42,15 +42,15 @@ tm.define "MainScene",
 
     if this.timer % extraTimerFrequency is 0
       extraTimer = Timer().addChildTo this.extraTimers
-      extraTimer.x = Math.rand 0, SCREEN_WIDTH
+      extraTimer.x = Math.rand 100, SCREEN_WIDTH-100
       extraTimer.y = 0 - extraTimer.height
 
     self = this
     this.extraTimers.children.each (extraTimer) ->
-      if extraTimer.gettable and  self.player.isHitElement extraTimer
+      if self.player.isHitElement extraTimer
         gameTimer += 3
         self.timerLabel.text = gameTimer
-        extraTimer.got()
+        extraTimer.remove()
         self.extendedTimeLabel.visible = true
         self.extendedTimeLabel.tweener
           .clear()

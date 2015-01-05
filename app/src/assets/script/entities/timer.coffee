@@ -1,9 +1,8 @@
 tm.define "Timer",
   superClass: "tm.app.AnimationSprite"
-  gettable: true
 
   init: ->
-    this.speed = Math.rand 3,6
+    this.speed = Math.rand 4,6
     ss = tm.asset.SpriteSheet
       image: "itemTimer"
       frame:
@@ -18,8 +17,6 @@ tm.define "Timer",
     this.superInit ss
     this.gotoAndPlay "blink"
 
-  got: ->
-    this.gettable = false
   update: (app)->
     this.y += this.speed
 

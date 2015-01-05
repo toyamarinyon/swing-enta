@@ -146,14 +146,15 @@ UI_DATA = {
       }, {
         type: "tm.display.Label",
         name: "extendedTimeLabel",
-        x: SCREEN_CENTER_X + 80,
-        y: 80,
+        x: SCREEN_CENTER_X + 72,
+        y: 90,
         width: SCREEN_WIDTH,
         fillStyle: "orange",
         text: "＋３秒！",
         fontSize: 30,
         align: "center",
-        visible: false
+        visible: false,
+        fontWeight: "bold"
       }
     ]
   }
@@ -248,15 +249,15 @@ tm.define("MainScene", {
     }
     if (this.timer % extraTimerFrequency === 0) {
       extraTimer = Timer().addChildTo(this.extraTimers);
-      extraTimer.x = Math.rand(0, SCREEN_WIDTH);
+      extraTimer.x = Math.rand(100, SCREEN_WIDTH - 100);
       extraTimer.y = 0 - extraTimer.height;
     }
     self = this;
     return this.extraTimers.children.each(function(extraTimer) {
-      if (extraTimer.gettable && self.player.isHitElement(extraTimer)) {
+      if (self.player.isHitElement(extraTimer)) {
         gameTimer += 3;
         self.timerLabel.text = gameTimer;
-        extraTimer.got();
+        extraTimer.remove();
         self.extendedTimeLabel.visible = true;
         return self.extendedTimeLabel.tweener.clear().fadeIn(400).fadeOut(400).fadeIn(400).fadeOut(400);
       }
@@ -314,9 +315,11 @@ tm.define("Player", {
     }
     if (this.x > SCREEN_WIDTH) {
       this.x = SCREEN_WIDTH;
+      this.accel = 0;
     }
     if (this.x < 0) {
-      return this.x = 0;
+      this.x = 0;
+      return this.accel = 0;
     }
   }
 });
@@ -341,10 +344,9 @@ tm.define("Enemy", {
 
 tm.define("Timer", {
   superClass: "tm.app.AnimationSprite",
-  gettable: true,
   init: function() {
     var ss;
-    this.speed = Math.rand(3, 6);
+    this.speed = Math.rand(4, 6);
     ss = tm.asset.SpriteSheet({
       image: "itemTimer",
       frame: {
@@ -362,9 +364,6 @@ tm.define("Timer", {
     });
     this.superInit(ss);
     return this.gotoAndPlay("blink");
-  },
-  got: function() {
-    return this.gettable = false;
   },
   update: function(app) {
     this.y += this.speed;

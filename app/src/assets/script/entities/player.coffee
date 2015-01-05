@@ -26,6 +26,8 @@ tm.define "Player",
 
     if this.x > SCREEN_WIDTH
       this.x = SCREEN_WIDTH
+      this.accel = 0
     if this.x < 0
       this.x = 0
+      this.accel = 0
 
