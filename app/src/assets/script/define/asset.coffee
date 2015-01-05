@@ -12,3 +12,4 @@ ASSETS =
   "bgm" : "assets/sound/bgm.mp3"
   "tutorial" : "assets/image/setumeiLead.png"
   "gameScoreBackground": "assets/image/header1.png"
+  "itemTimer": "assets/image/timer.png"

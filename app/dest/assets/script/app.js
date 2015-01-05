@@ -1,4 +1,4 @@
-var ASSETS, ENEMY_HEIGHT, ENEMY_SCALE_FACTOR, ENEMY_WIDTH, GAME_LIMIT_TIMER, PLAYER_HEIGHT, PLAYER_POSITION_Y, PLAYER_SCALE_FACTOR, PLAYER_WIDTH, SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH, UI_DATA, bgmPlayed, enableController, enemyTimer, gameTimer, score;
+var ASSETS, ENEMY_HEIGHT, ENEMY_SCALE_FACTOR, ENEMY_WIDTH, GAME_LIMIT_TIMER, PLAYER_HEIGHT, PLAYER_POSITION_Y, PLAYER_SCALE_FACTOR, PLAYER_WIDTH, SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH, UI_DATA, bgmPlayed, enableController, enemyTimer, extraTimerFrequency, gameTimer, score;
 
 SCREEN_WIDTH = 640;
 
@@ -32,6 +32,8 @@ enableController = false;
 
 enemyTimer = 60;
 
+extraTimerFrequency = 300;
+
 bgmPlayed = false;
 
 ASSETS = {
@@ -47,7 +49,8 @@ ASSETS = {
   "playButton": "assets/image/playButton.png",
   "bgm": "assets/sound/bgm.mp3",
   "tutorial": "assets/image/setumeiLead.png",
-  "gameScoreBackground": "assets/image/header1.png"
+  "gameScoreBackground": "assets/image/header1.png",
+  "itemTimer": "assets/image/timer.png"
 };
 
 UI_DATA = {
@@ -109,8 +112,8 @@ UI_DATA = {
   playerAndTimeLabel: {
     children: [
       {
-        type: "Enta",
-        name: "enta",
+        type: "Player",
+        name: "player",
         x: SCREEN_CENTER_X,
         y: PLAYER_POSITION_Y
       }, {
@@ -140,6 +143,17 @@ UI_DATA = {
         text: "0",
         fontSize: 30,
         align: "right"
+      }, {
+        type: "tm.display.Label",
+        name: "extendedTimeLabel",
+        x: SCREEN_CENTER_X + 80,
+        y: 80,
+        width: SCREEN_WIDTH,
+        fillStyle: "orange",
+        text: "＋３秒！",
+        fontSize: 30,
+        align: "center",
+        visible: false
       }
     ]
   }
@@ -159,13 +173,7 @@ tm.main(function() {
     height: SCREEN_HEIGHT
   });
   app.replaceScene(loadingScene);
-  app.run();
-  return app.canvas.element.addEventListener("touchstart", function() {
-    if (!bgmPlayed) {
-      tm.asset.AssetManager.get("bgm").setLoop(true).play();
-      return bgmPlayed = true;
-    }
-  });
+  return app.run();
 });
 
 tm.define("TitleScene", {
@@ -208,10 +216,11 @@ tm.define("MainScene", {
     enemyTimer = 60;
     this.timerLabel.text = gameTimer = GAME_LIMIT_TIMER;
     this.ground.y = SCREEN_HEIGHT - this.ground.height / 2;
-    return this.enemyGroup = tm.app.CanvasElement().addChildTo(this);
+    this.enemyGroup = tm.app.CanvasElement().addChildTo(this);
+    return this.extraTimers = tm.app.CanvasElement().addChildTo(this);
   },
   update: function(app) {
-    var enemies, enemy, self;
+    var extraTimer, self;
     if (this.worldSpeed < 2.0) {
       this.worldSpeed += 0.05;
     }
@@ -232,16 +241,26 @@ tm.define("MainScene", {
     ++this.timer;
     if (this.timer % 60 === 0) {
       gameTimer--;
+      if (gameTimer < 1) {
+        app.replaceScene(EndScene(Math.round(score)));
+      }
       this.timerLabel.text = gameTimer;
     }
-    if (this.timer % enemyTimer === 0) {
-      enemy = Enemy().addChildTo(this.enemyGroup);
-      enemy.x = Math.rand(0, SCREEN_WIDTH);
-      enemy.y = 0 - enemy.height;
+    if (this.timer % extraTimerFrequency === 0) {
+      extraTimer = Timer().addChildTo(this.extraTimers);
+      extraTimer.x = Math.rand(0, SCREEN_WIDTH);
+      extraTimer.y = 0 - extraTimer.height;
     }
     self = this;
-    enemies = this.enemyGroup.children;
-    return enemies.each(function(enemy) {});
+    return this.extraTimers.children.each(function(extraTimer) {
+      if (extraTimer.gettable && self.player.isHitElement(extraTimer)) {
+        gameTimer += 3;
+        self.timerLabel.text = gameTimer;
+        extraTimer.got();
+        self.extendedTimeLabel.visible = true;
+        return self.extendedTimeLabel.tweener.clear().fadeIn(400).fadeOut(400).fadeIn(400).fadeOut(400);
+      }
+    });
   }
 });
 
@@ -316,6 +335,41 @@ tm.define("Enemy", {
     }
     if (!this.counted && this.y > PLAYER_POSITION_Y) {
       return this.counted = true;
+    }
+  }
+});
+
+tm.define("Timer", {
+  superClass: "tm.app.AnimationSprite",
+  gettable: true,
+  init: function() {
+    var ss;
+    this.speed = Math.rand(3, 6);
+    ss = tm.asset.SpriteSheet({
+      image: "itemTimer",
+      frame: {
+        width: 88,
+        height: 80,
+        count: 2
+      },
+      animations: {
+        blink: {
+          frames: [0, 1],
+          next: "blink",
+          frequency: "30"
+        }
+      }
+    });
+    this.superInit(ss);
+    return this.gotoAndPlay("blink");
+  },
+  got: function() {
+    return this.gettable = false;
+  },
+  update: function(app) {
+    this.y += this.speed;
+    if (this.y > SCREEN_HEIGHT + this.height) {
+      return this.remove();
     }
   }
 });

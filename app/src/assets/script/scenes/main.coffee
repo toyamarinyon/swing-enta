@@ -15,6 +15,7 @@ tm.define "MainScene",
     this.ground.y = SCREEN_HEIGHT - this.ground.height/2
 
     this.enemyGroup = tm.app.CanvasElement().addChildTo this
+    this.extraTimers = tm.app.CanvasElement().addChildTo this
   update: (app) ->
     this.worldSpeed+= 0.05 if this.worldSpeed < 2.0
     this.ground.y += this.worldSpeed
@@ -35,16 +36,26 @@ tm.define "MainScene",
 
     if this.timer % 60 is 0
       gameTimer--
+      if gameTimer < 1
+        app.replaceScene EndScene Math.round score
       this.timerLabel.text = gameTimer
 
-    if this.timer % enemyTimer is 0
-      enemy = Enemy().addChildTo this.enemyGroup
-      enemy.x = Math.rand 0, SCREEN_WIDTH
-      enemy.y = 0 - enemy.height
+    if this.timer % extraTimerFrequency is 0
+      extraTimer = Timer().addChildTo this.extraTimers
+      extraTimer.x = Math.rand 0, SCREEN_WIDTH
+      extraTimer.y = 0 - extraTimer.height
 
     self = this
-    enemies = this.enemyGroup.children
-    enemies.each (enemy) ->
-      # if self.enta.isHitElement enemy
-        # app.replaceScene EndScene(score)
+    this.extraTimers.children.each (extraTimer) ->
+      if extraTimer.gettable and  self.player.isHitElement extraTimer
+        gameTimer += 3
+        self.timerLabel.text = gameTimer
+        extraTimer.got()
+        self.extendedTimeLabel.visible = true
+        self.extendedTimeLabel.tweener
+          .clear()
+          .fadeIn 400
+          .fadeOut 400
+          .fadeIn 400
+          .fadeOut 400
 

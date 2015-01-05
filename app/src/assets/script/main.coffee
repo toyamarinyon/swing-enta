@@ -15,8 +15,8 @@ tm.main ->
 
   app.run()
 
-  app.canvas.element.addEventListener "touchstart", ->
-    if not bgmPlayed
-      tm.asset.AssetManager.get("bgm").setLoop(true).play()
-      bgmPlayed = true
+  # app.canvas.element.addEventListener "touchstart", ->
+  #   if not bgmPlayed
+  #     tm.asset.AssetManager.get("bgm").setLoop(true).play()
+  #     bgmPlayed = true
 

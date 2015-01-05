@@ -47,8 +47,8 @@ UI_DATA =
     ]
   playerAndTimeLabel:
     children: [
-      type: "Enta"
-      name: "enta"
+      type: "Player"
+      name: "player"
       x: SCREEN_CENTER_X
       y: PLAYER_POSITION_Y
      ,
@@ -78,4 +78,15 @@ UI_DATA =
       text: "0"
       fontSize: 30
       align: "right"
+     ,
+      type: "tm.display.Label"
+      name: "extendedTimeLabel"
+      x: SCREEN_CENTER_X + 80
+      y: 80
+      width: SCREEN_WIDTH
+      fillStyle: "orange"
+      text: "＋３秒！"
+      fontSize: 30
+      align: "center"
+      visible: false
     ]
