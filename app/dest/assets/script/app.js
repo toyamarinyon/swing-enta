@@ -14,7 +14,7 @@ PLAYER_HEIGHT = 358;
 
 PLAYER_SCALE_FACTOR = 2.0;
 
-PLAYER_POSITION_Y = SCREEN_HEIGHT - PLAYER_HEIGHT / PLAYER_SCALE_FACTOR - 60;
+PLAYER_POSITION_Y = SCREEN_HEIGHT - PLAYER_HEIGHT / PLAYER_SCALE_FACTOR - 100;
 
 BALLOON_WIDTH = 469;
 
@@ -353,12 +353,12 @@ tm.define("Player", {
   prevFrameDirection: "right",
   degree: 90,
   accel: 0,
-  hasBallons: 1,
+  hasBallons: 0,
   init: function() {
     this.superInit("entaRight", PLAYER_WIDTH / PLAYER_SCALE_FACTOR, PLAYER_HEIGHT / PLAYER_SCALE_FACTOR);
     this.origin.y = 0;
     this.balloonImage = tm.app.Sprite("balloonRight1", BALLOON_WIDTH / PLAYER_SCALE_FACTOR, BALLOON_HEIGHT / PLAYER_SCALE_FACTOR).addChildTo(this);
-    this.balloonImage.visible = true;
+    this.balloonImage.visible = false;
     this.balloonImage.y -= 13;
     return this.balloonImage.x -= 10;
   },
@@ -372,7 +372,9 @@ tm.define("Player", {
           this.accel -= 0.2;
         }
         this.image = "entaLeft";
-        this.balloonImage.image = "balloonLeft" + this.hasBallons;
+        if (this.hasBallons > 0) {
+          this.balloonImage.image = "balloonLeft" + this.hasBallons;
+        }
         this.balloonImage.x = 10;
       }
       if (this.direction === "right") {
@@ -380,7 +382,9 @@ tm.define("Player", {
           this.accel += 0.2;
         }
         this.image = "entaRight";
-        this.balloonImage.image = "balloonRight" + this.hasBallons;
+        if (this.hasBallons > 0) {
+          this.balloonImage.image = "balloonRight" + this.hasBallons;
+        }
         this.balloonImage.x = -10;
       }
       this.x += this.accel;
@@ -396,6 +400,7 @@ tm.define("Player", {
     }
   },
   getBalloon: function() {
+    this.balloonImage.visible = true;
     return this.hasBallons++;
   }
 });
