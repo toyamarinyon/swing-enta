@@ -1,6 +1,7 @@
 tm.define "EndScene",
   superClass: "tm.app.ResultScene"
   init: (score) ->
+    enableController = false
     this.superInit
       score: score
       msg: "空飛ぶエンタ"
