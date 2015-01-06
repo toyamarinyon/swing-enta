@@ -332,6 +332,7 @@ tm.define("MainScene", {
 tm.define("EndScene", {
   superClass: "tm.app.ResultScene",
   init: function(score) {
+    enableController = false;
     return this.superInit({
       score: score,
       msg: "空飛ぶエンタ",
@@ -409,7 +410,7 @@ tm.define("Timer", {
   superClass: "tm.app.AnimationSprite",
   init: function() {
     var ss;
-    this.speed = Math.rand(1, 2);
+    this.speed = Math.rand(3, 6);
     ss = tm.asset.SpriteSheet({
       image: "itemTimer",
       frame: {
@@ -425,7 +426,7 @@ tm.define("Timer", {
         }
       }
     });
-    this.superInit(ss);
+    this.superInit(ss, 88 / 1.5, 80 / 1.5);
     return this.gotoAndPlay("blink");
   },
   update: function(app) {
