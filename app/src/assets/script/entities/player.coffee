@@ -10,7 +10,7 @@ tm.define "Player",
     this.origin.y = 0
     this.balloonImage = tm.app.Sprite("balloonRight1", BALLOON_WIDTH/PLAYER_SCALE_FACTOR, BALLOON_HEIGHT/PLAYER_SCALE_FACTOR).addChildTo this
     this.balloonImage.visible = false
-    this.balloonImage.y -= 13
+    this.balloonImage.y -= 34
     this.balloonImage.x -= 10
 
   update: (app) ->
