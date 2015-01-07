@@ -19,7 +19,7 @@ UI_DATA =
       name: "tutorial"
       init: ["tutorial"]
       x: SCREEN_CENTER_X
-      y: SCREEN_CENTER_Y - 200
+      y: SCREEN_CENTER_Y - 180
     ]
   gameScene:
     children: [

@@ -44,13 +44,13 @@ tm.define "MainScene",
 
     if itemBalloonFlag and this.timer % balloonFrequency is 0
       balloon = Balloon().addChildTo this.balloons
-      balloon.x = Math.rand 100, SCREEN_WIDTH-100
+      balloon.x = Math.rand 0, SCREEN_WIDTH
       balloon.y = 0 - balloon.height
       # balloonFrequency = Math.rand 100, 150
 
     if this.timer % extraTimerFrequency is 0
       extraTimer = Timer().addChildTo this.extraTimers
-      extraTimer.x = Math.rand 100, SCREEN_WIDTH-100
+      extraTimer.x = Math.rand 0, SCREEN_WIDTH
       extraTimer.y = 0 - extraTimer.height
       # extraTimerFrequency = Math.rand extraTimerFrequency
 

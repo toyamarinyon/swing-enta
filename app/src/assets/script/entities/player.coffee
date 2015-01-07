@@ -16,16 +16,20 @@ tm.define "Player",
   update: (app) ->
     if app.pointing.getPointingStart()
       this.direction = if app.pointing.x < SCREEN_WIDTH/2 then "left" else "right"
+    if app.keyboard.getKey "left"
+      this.direction = "left"
+    if app.keyboard.getKey "right"
+      this.direction = "right"
 
 
     if enableController
       if this.direction is "left"
-        this.accel-=0.2 if this.accel > -8.0
+        this.accel-=0.14 if this.accel > -7.0
         this.image = "entaLeft"
         this.balloonImage.image = "balloonLeft"+this.hasBallons if this.hasBallons > 0
         this.balloonImage.x = 10
       if this.direction is "right"
-        this.accel+=0.2 if this.accel < 8.0
+        this.accel+=0.14 if this.accel < 7.0
         this.image = "entaRight"
         this.balloonImage.image = "balloonRight"+this.hasBallons if this.hasBallons > 0
         this.balloonImage.x = -10

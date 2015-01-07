@@ -111,7 +111,7 @@ UI_DATA = {
         name: "tutorial",
         init: ["tutorial"],
         x: SCREEN_CENTER_X,
-        y: SCREEN_CENTER_Y - 200
+        y: SCREEN_CENTER_Y - 180
       }
     ]
   },
@@ -296,12 +296,12 @@ tm.define("MainScene", {
     }
     if (itemBalloonFlag && this.timer % balloonFrequency === 0) {
       balloon = Balloon().addChildTo(this.balloons);
-      balloon.x = Math.rand(100, SCREEN_WIDTH - 100);
+      balloon.x = Math.rand(0, SCREEN_WIDTH);
       balloon.y = 0 - balloon.height;
     }
     if (this.timer % extraTimerFrequency === 0) {
       extraTimer = Timer().addChildTo(this.extraTimers);
-      extraTimer.x = Math.rand(100, SCREEN_WIDTH - 100);
+      extraTimer.x = Math.rand(0, SCREEN_WIDTH);
       extraTimer.y = 0 - extraTimer.height;
     }
     self = this;
@@ -367,10 +367,16 @@ tm.define("Player", {
     if (app.pointing.getPointingStart()) {
       this.direction = app.pointing.x < SCREEN_WIDTH / 2 ? "left" : "right";
     }
+    if (app.keyboard.getKey("left")) {
+      this.direction = "left";
+    }
+    if (app.keyboard.getKey("right")) {
+      this.direction = "right";
+    }
     if (enableController) {
       if (this.direction === "left") {
-        if (this.accel > -8.0) {
-          this.accel -= 0.2;
+        if (this.accel > -7.0) {
+          this.accel -= 0.14;
         }
         this.image = "entaLeft";
         if (this.hasBallons > 0) {
@@ -379,8 +385,8 @@ tm.define("Player", {
         this.balloonImage.x = 10;
       }
       if (this.direction === "right") {
-        if (this.accel < 8.0) {
-          this.accel += 0.2;
+        if (this.accel < 7.0) {
+          this.accel += 0.14;
         }
         this.image = "entaRight";
         if (this.hasBallons > 0) {
@@ -440,7 +446,7 @@ tm.define("Timer", {
 tm.define("Balloon", {
   superClass: "tm.app.Sprite",
   init: function() {
-    this.superInit("itemBallonRed");
+    this.superInit("itemBallonRed", 66 / 1.5, 107 / 1.5);
     return this.speed = Math.rand(4, 6);
   },
   update: function(app) {
