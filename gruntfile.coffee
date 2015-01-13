@@ -43,6 +43,8 @@ module.exports = (grunt) ->
         files: 
           "./app/dest/assets/script/app.js":[
 
+            "./app/src/assets/script/parse/initialize.coffee",
+
             "./app/src/assets/script/define/const.coffee",
             "./app/src/assets/script/define/variables.coffee",
             "./app/src/assets/script/define/asset.coffee",
