@@ -1,5 +1,18 @@
 var ASSETS, BALLOON_HEIGHT, BALLOON_WIDTH, ENEMY_HEIGHT, ENEMY_SCALE_FACTOR, ENEMY_WIDTH, GAME_LIMIT_TIMER, LIMIT_BALLOONS, PLAYER_HEIGHT, PLAYER_POSITION_Y, PLAYER_SCALE_FACTOR, PLAYER_WIDTH, SCREEN_CENTER_X, SCREEN_CENTER_Y, SCREEN_HEIGHT, SCREEN_WIDTH, UI_DATA, balloonFrequency, bgmPlayed, enableController, enemyTimer, extraTimerFrequency, gameTimer, itemBalloonFlag, score, worldSpeed;
 
+Parse.initialize("JeZTJRXz7olrR7jLVEsHppyRolMGjJdeoTNVVg8m", "Xyg6oi5UevbRk1Rp3RuSdq9omwPJekz0NyxzAV7v");
+
+
+/*
+TestObject = Parse.Object.extend "TestObject"
+testObject = new TestObject()
+testObject
+  .save
+    foo: "bar"
+  .then (object) ->
+    alert "yay! it worked"
+ */
+
 SCREEN_WIDTH = 640;
 
 SCREEN_HEIGHT = 960;
@@ -202,6 +215,84 @@ UI_DATA = {
         fontWeight: "bold"
       }
     ]
+  },
+  endScene: {
+    children: [
+      {
+        type: "tm.display.Label",
+        name: "sceneTitleLabel",
+        x: SCREEN_CENTER_X,
+        y: 140,
+        width: SCREEN_WIDTH,
+        fillStyle: "black",
+        text: "TIME UP!",
+        fontSize: 80,
+        fontWeight: "bold",
+        align: "center"
+      }, {
+        type: "tm.display.Label",
+        name: "sceneh2TitleLabel",
+        x: SCREEN_CENTER_X,
+        y: 200,
+        width: SCREEN_WIDTH,
+        fillStyle: "black",
+        text: "これまでのトップ３",
+        fontSize: 20,
+        fontWeight: "bold",
+        align: "center"
+      }, {
+        type: "tm.display.Label",
+        name: "scoreLabel",
+        x: SCREEN_CENTER_X,
+        y: 540,
+        width: SCREEN_WIDTH,
+        fillStyle: "black",
+        text: "0",
+        fontSize: 30,
+        align: "right"
+      }, {
+        type: "tm.display.Label",
+        name: "leaderboardFirst",
+        x: SCREEN_CENTER_X,
+        y: 250,
+        width: SCREEN_WIDTH,
+        fillStyle: "black",
+        text: "１位",
+        fontSize: 30,
+        align: "center"
+      }, {
+        type: "tm.display.Label",
+        name: "leaderboardSecond",
+        x: SCREEN_CENTER_X,
+        y: 300,
+        width: SCREEN_WIDTH,
+        fillStyle: "black",
+        text: "２位",
+        fontSize: 30,
+        align: "center"
+      }, {
+        type: "tm.display.Label",
+        name: "leaderboardThird",
+        x: SCREEN_CENTER_X,
+        y: 350,
+        width: SCREEN_WIDTH,
+        fillStyle: "black",
+        text: "３位",
+        fontSize: 30,
+        align: "center"
+      }, {
+        type: "tm.display.Label",
+        name: "sceneTitleLabel",
+        x: SCREEN_CENTER_X,
+        y: 500,
+        width: SCREEN_WIDTH,
+        fillStyle: "black",
+        text: "あなたのスコア",
+        fontSize: 20,
+        fontWeight: "bold",
+        align: "center"
+      }
+    ]
   }
 };
 
@@ -330,21 +421,66 @@ tm.define("MainScene", {
 });
 
 tm.define("EndScene", {
-  superClass: "tm.app.ResultScene",
+  score: 0,
+  superClass: "tm.app.Scene",
   init: function(score) {
     enableController = false;
-    return this.superInit({
-      score: score,
-      msg: "空飛ぶエンタ",
-      hastags: ["FlyingEnta!"],
-      url: "http://icebreak.jp",
-      width: SCREEN_WIDTH,
-      height: SCREEN_HEIGHT,
-      related: "thank you for playing!"
-    });
+    this.leaderboard();
+    this.superInit();
+    this.fromJSON(UI_DATA.gameScene);
+    this.fromJSON(UI_DATA.endScene);
+    this.scoreLabel.text = score;
+    this.ground.y = SCREEN_HEIGHT - this.ground.height / 2;
+    return this.sendScore(score);
   },
   onnextscene: function(event) {
     return event.target.app.replaceScene(TutorialScene());
+  },
+  leaderboard: function() {
+    var query, readerboard, self;
+    readerboard = Parse.Object.extend("Leaderboard");
+    query = new Parse.Query(readerboard);
+    query.descending("score").limit(3);
+    self = this;
+    return query.find({
+      success: function(results) {
+        var i, result, userName, _i, _len, _results;
+        _results = [];
+        for (i = _i = 0, _len = results.length; _i < _len; i = ++_i) {
+          result = results[i];
+          if (i === 0) {
+            userName = result.get("userName");
+            score = result.get("score");
+            self.leaderboardFirst.text = self.leaderboardFirst.text + " " + userName + " " + score;
+          }
+          if (i === 1) {
+            userName = result.get("userName");
+            score = result.get("score");
+            self.leaderboardSecond.text = self.leaderboardSecond.text + " " + userName + " " + score;
+          }
+          if (i === 2) {
+            userName = result.get("userName");
+            score = result.get("score");
+            _results.push(self.leaderboardThird.text = self.leaderboardThird.text + " " + userName + " " + score);
+          } else {
+            _results.push(void 0);
+          }
+        }
+        return _results;
+      }
+    });
+  },
+  sendScore: function(score) {
+    var l, leaderboard;
+    console.log(score);
+    leaderboard = Parse.Object.extend("Leaderboard");
+    l = new leaderboard();
+    return l.save({
+      score: score,
+      userName: document.getElementById("UserNameTextForm").value
+    }).then(function(object) {
+      return console.log("yey!");
+    });
   }
 });
 

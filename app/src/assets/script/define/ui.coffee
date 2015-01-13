@@ -103,3 +103,78 @@ UI_DATA =
       visible: false
       fontWeight: "bold"
     ]
+  endScene:
+    children: [
+      type: "tm.display.Label"
+      name: "sceneTitleLabel"
+      x: SCREEN_CENTER_X
+      y: 140
+      width: SCREEN_WIDTH
+      fillStyle: "black"
+      text: "TIME UP!"
+      fontSize: 80
+      fontWeight: "bold"
+      align: "center"
+     ,
+      type: "tm.display.Label"
+      name: "sceneh2TitleLabel"
+      x: SCREEN_CENTER_X
+      y: 200
+      width: SCREEN_WIDTH
+      fillStyle: "black"
+      text: "これまでのトップ３"
+      fontSize: 20
+      fontWeight: "bold"
+      align: "center"
+     ,
+      type: "tm.display.Label"
+      name: "scoreLabel"
+      x: SCREEN_CENTER_X
+      y: 540
+      width: SCREEN_WIDTH
+      fillStyle: "black"
+      text: "0"
+      fontSize: 30
+      align: "right"
+     ,
+      type: "tm.display.Label"
+      name: "leaderboardFirst"
+      x: SCREEN_CENTER_X
+      y: 250
+      width: SCREEN_WIDTH
+      fillStyle: "black"
+      text: "１位"
+      fontSize: 30
+      align: "center"
+     ,
+      type: "tm.display.Label"
+      name: "leaderboardSecond"
+      x: SCREEN_CENTER_X
+      y: 300
+      width: SCREEN_WIDTH
+      fillStyle: "black"
+      text: "２位"
+      fontSize: 30
+      align: "center"
+     ,
+      type: "tm.display.Label"
+      name: "leaderboardThird"
+      x: SCREEN_CENTER_X
+      y: 350
+      width: SCREEN_WIDTH
+      fillStyle: "black"
+      text: "３位"
+      fontSize: 30
+      align: "center"
+     ,
+      type: "tm.display.Label"
+      name: "sceneTitleLabel"
+      x: SCREEN_CENTER_X
+      y: 500
+      width: SCREEN_WIDTH
+      fillStyle: "black"
+      text: "あなたのスコア"
+      fontSize: 20
+      fontWeight: "bold"
+      align: "center"
+    ]

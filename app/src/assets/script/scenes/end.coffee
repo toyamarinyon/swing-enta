@@ -1,16 +1,48 @@
 tm.define "EndScene",
-  superClass: "tm.app.ResultScene"
+  score: 0
+  superClass: "tm.app.Scene"
   init: (score) ->
     enableController = false
-    this.superInit
-      score: score
-      msg: "空飛ぶエンタ"
-      hastags: ["FlyingEnta!"]
-      url: "http://icebreak.jp"
-      width: SCREEN_WIDTH
-      height: SCREEN_HEIGHT
-      related: "thank you for playing!"
+    this.leaderboard()
+    this.superInit()
+    this.fromJSON UI_DATA.gameScene
+    this.fromJSON UI_DATA.endScene
+    this.scoreLabel.text = score
+    this.ground.y = SCREEN_HEIGHT - this.ground.height/2
+    this.sendScore(score)
   onnextscene: (event) ->
     event.target.app.replaceScene TutorialScene()
 
+  leaderboard: ->
+    readerboard = Parse.Object.extend "Leaderboard"
+    query = new Parse.Query readerboard
+    query
+      .descending "score"
+      .limit 3
+    self = this
+    query.find
+      success: (results) ->
+        for result, i in results
+          if i is 0
+            userName = result.get "userName"
+            score = result.get "score"
+            self.leaderboardFirst.text = self.leaderboardFirst.text + " " + userName + " " + score
+          if i is 1
+            userName = result.get "userName"
+            score = result.get "score"
+            self.leaderboardSecond.text = self.leaderboardSecond.text + " " + userName + " " + score
+          if i is 2
+            userName = result.get "userName"
+            score = result.get "score"
+            self.leaderboardThird.text = self.leaderboardThird.text + " " + userName + " " + score
+  sendScore: (score) ->
+    console.log score
+    leaderboard = Parse.Object.extend "Leaderboard"
+    l = new leaderboard()
+    l
+      .save
+        score: score
+        userName: document.getElementById("UserNameTextForm").value
+      .then (object) ->
+        console.log "yey!"
 
