@@ -425,61 +425,64 @@ tm.define("EndScene", {
   superClass: "tm.app.Scene",
   init: function(score) {
     enableController = false;
-    this.leaderboard();
+    this.leaderboard(score);
     this.superInit();
     this.fromJSON(UI_DATA.gameScene);
     this.fromJSON(UI_DATA.endScene);
     this.scoreLabel.text = score;
-    this.ground.y = SCREEN_HEIGHT - this.ground.height / 2;
-    return this.sendScore(score);
+    return this.ground.y = SCREEN_HEIGHT - this.ground.height / 2;
   },
   onnextscene: function(event) {
     return event.target.app.replaceScene(TutorialScene());
   },
-  leaderboard: function() {
-    var query, readerboard, self;
-    readerboard = Parse.Object.extend("Leaderboard");
-    query = new Parse.Query(readerboard);
-    query.descending("score").limit(3);
+  leaderboard: function(score) {
+    var fetchLeaderboard, self;
     self = this;
-    return query.find({
-      success: function(results) {
-        var i, result, userName, _i, _len, _results;
-        _results = [];
-        for (i = _i = 0, _len = results.length; _i < _len; i = ++_i) {
-          result = results[i];
-          if (i === 0) {
-            userName = result.get("userName");
-            score = result.get("score");
-            self.leaderboardFirst.text = self.leaderboardFirst.text + " " + userName + " " + score;
+    fetchLeaderboard = function() {
+      var query, readerboard;
+      readerboard = Parse.Object.extend("Leaderboard");
+      query = new Parse.Query(readerboard);
+      query.descending("score").limit(3);
+      return query.find({
+        success: function(results) {
+          var i, result, userName, _i, _len, _results;
+          _results = [];
+          for (i = _i = 0, _len = results.length; _i < _len; i = ++_i) {
+            result = results[i];
+            if (i === 0) {
+              userName = result.get("userName");
+              score = result.get("score");
+              self.leaderboardFirst.text = self.leaderboardFirst.text + " " + userName + " " + score;
+            }
+            if (i === 1) {
+              userName = result.get("userName");
+              score = result.get("score");
+              self.leaderboardSecond.text = self.leaderboardSecond.text + " " + userName + " " + score;
+            }
+            if (i === 2) {
+              userName = result.get("userName");
+              score = result.get("score");
+              _results.push(self.leaderboardThird.text = self.leaderboardThird.text + " " + userName + " " + score);
+            } else {
+              _results.push(void 0);
+            }
           }
-          if (i === 1) {
-            userName = result.get("userName");
-            score = result.get("score");
-            self.leaderboardSecond.text = self.leaderboardSecond.text + " " + userName + " " + score;
-          }
-          if (i === 2) {
-            userName = result.get("userName");
-            score = result.get("score");
-            _results.push(self.leaderboardThird.text = self.leaderboardThird.text + " " + userName + " " + score);
-          } else {
-            _results.push(void 0);
-          }
+          return _results;
         }
-        return _results;
-      }
-    });
+      });
+    };
+    return this.sendScore(score, fetchLeaderboard);
   },
-  sendScore: function(score) {
+  sendScore: function(score, callback) {
     var l, leaderboard;
-    console.log(score);
     leaderboard = Parse.Object.extend("Leaderboard");
     l = new leaderboard();
     return l.save({
       score: score,
       userName: document.getElementById("UserNameTextForm").value
     }).then(function(object) {
-      return console.log("yey!");
+      console.log("yey!");
+      return callback();
     });
   }
 });
